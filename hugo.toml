@@ -1,0 +1,4 @@
+baseURL = 'https://blog.nicholaschong.dev/'
+languageCode = 'en-us'
+title = 'Blog - Nicholas Chong'
+theme = 'nostyleplease'
