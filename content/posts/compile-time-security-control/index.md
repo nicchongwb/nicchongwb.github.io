@@ -4,67 +4,92 @@ draft = false
 title = 'Compile-time Security Controls: Bridging the Gap Beyond SAST'
 +++
 
-**Disclaimer:**
-*I am not a compiler expert. This article goal is to express the possibility of how we can look compile-time security controls for Application Security.*
 
-# What is SAST
+**Disclaimer:** *I am not a compiler expert. This article's goal is to express the possibility of how we can look at compile-time security controls for Application Security.*
 
-Static Application Security Testing (SAST) involves the scanning of static application code before it is compiled. Many organizations rely on SAST to identify vulnerabilities in the initial stages of development. This article will explore the limitations of SAST and how we can fill these gaps with compile-time security controls. The article uses the Java programming language to demonstrate how compile-time security controls are applied to Java programs. However, the strategy can be applied to other compiled programming languages like C++, Go, Rust, etc. 
+
+# What is SAST?
+
+Static Application Security Testing (SAST) involves the scanning of static application code before it is compiled. The scan usually involves a parser to check for security vulnerabilities before the code is compiled. 
 
 # The limitations of SAST
 
-A typical Secure Software Development Lifecycle (SSDLC) involves SAST and DAST (Dynamic Application Security Testing) for security assurance. One of the goals of SAST is to detect insecure code patterns by scanning the static code. SAST tools usually allow engineers to write rules for scanning, data flow analysis, or taint tracking. Assuming we know all the methods' names that if used insecurely, will lead to common application vulnerabilities like SQL Injection, Deserialization, etc and write SAST rules to detect them. 
+SAST scanners will look for known or configured insecure coding patterns by parsing source files. Parsing source files typically involves building an abstract syntax tree (AST) data structure, where each node represents a specific token and its relationship with other tokens. However, the limitation of SAST scanners is the lack of richer semantics of each token.
 
-Does this guarantee that our application code meets our security requirements before it is built?
+This limitation arises when third party libraries/packages are used. Consider the following source file main.java:
 
-No, SAST scans (as of the time of writing) only work with static sources like application source code. That means that the scan only sees as far as what it parses but it doesn’t have complete knowledge of the fully resolved Abstract Syntax Tree (AST).
+```java
+import thirdparty.library.Helper;
+
+public class Main {
+    public static void main(String[] args){
+        // ...SNIP...
+        String data = Helper.extract(userInfo);
+        // ...SNIP...
+    }
+}
+```
+
+When the scanner parses this file, it only builds the AST with tokens available in the source file. In other words, it doesn’t have much knowledge on the third party library tokens like Helper and its method `extract()` other than their token names. If the scanner is robust, it may be able to dynamically resolve the third party library to enrich the AST. However, depending on how the programming language works, resolving third party libraries may only provide links to precompiled classes/objects/binaries from importing these libraries. The scanner may not be robust enough to scan the precompiled classes/objects/binaries to provide richer semantics to the respective tokens in the source file, main.java.
+
+In the example shown, `extract()` may contain some insecure implementation. However, the scanner is not able to detect it because the implementation is not in the source file of the program depending on its package.
+
+In the complex world of programming, third party libraries are commonly used by developers. Adversarial actors can also weaponise this dependency by poisoning libraries with insecure code.
+
+SAST scanners only work with source files in a very static manner. They most probably lack the ability to fully build a semantically rich AST containing all information including third party libraries.
+
 
 
 ![Fig 1. Overview of SAST tool & Compile-time Security Control.](figure-1.png)
 
-Let’s see an example of how SAST is not able to detect usage of dangerous methods. The code below is one of our application codes to be scanned by SAST. We see that a third-party library Deserializagator is used to deserialize our serializedData into a MyCustomClass class.
+Let’s see another example of how SAST is not able to detect usage of dangerous methods. The code below is a source file that will be parsed and scanned. We see that a third-party library Dslzgator is used to deserialize our serializedData into a UserInfo class.
 
 ```Java
-import com.deserailizagator.deserializer.Deserializagator;
+import com.dslz.Dslzgator;
 
 public class Main {
     public static void main(String[] args){
         byte[] serializedData = getUserInput();
-        MyCustomClass deserializedObject = Deserializagator.deserialize(serializedData, YourCustomClass.class);
+        UserInfo userInfo = Dslzgator.deserialize(
+            serializedData, 
+            UserInfo.class
+        );
     }
 }
 ```
 
-The SAST tool will scan the code above without compiling it. The issue with this is that we don’t know if the implementation of `Deserializagator.deserialize()` is safe or not. Of course, one may argue that the third-party library can be audited and if unsafe, a SAST rule can be written. However, to account for all third-party libraries that may potentially provide APIs that have unsafe implementation may not be a viable solution.
+The scanner will parse and scan the code above without compiling it. At this point, we don’t know if the implementation of `Dslzgator.deserialize()` is safe or not. Scanners are typically not as robust to fully inspect third party libraries because it may be inefficient to scan many layers of the dependency chain.
 
-Let’s take a look at `Deserializagator.deserialize()` implementation.
+Let’s take a look at `Dslzgator.deserialize()` implementation.
 
 ```Java
-package com.deserailizagator.deserializer;
+package com.dslz;
 
-public class Deserializagator {
+public class Dslzgator {
     public static <T> T deserialize(byte[] input, Class<T> clazz) {
-        T deserializedObject = null;
+        T userInfo = null;
         ByteArrayInputStream bais = new ByteArrayInputStream(input);
         ObjectInputStream ois = new ObjectInputStream(bais);  
-        deserializedObject = clazz.cast(ois.readObject());
+        userInfo = clazz.cast(ois.readObject());
             
         ois.close();
         bais.close();
-        return deserializedObject;
+        return userInfo;
     }
 }
 ```
 
-Readers with Java security source code review can immediately tell that the `deserialize()` method is vulnerable to Java deserialization attacks. For more information on Java deserialization attacks, take a look at [OWASP Cheatsheet - Deserialization](https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html#whitebox-review_2).
+Readers with Java security source code review can immediately tell that the `deserialize()` method is vulnerable to Java insecure deserialization attacks. For more information on Java deserialization attacks, take a look at [OWASP Cheatsheet - Deserialization](https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html#whitebox-review_2). 
 
 In the case of Java programs, a build tool like Gradle or Maven is typically used for dependency resolution before the Java compiler compiles the program. The dependency resolution is responsible for locating and downloading third-party dependencies.
 
-The limitation of SAST tools is that it only scans code and not compile/build them. This means that SAST tools will not have complete knowledge of the fully resolved Abstract Syntax Tree (AST) generated during compilation.
+As mentioned, the limitation of SAST tools is that it only scans code from the parsed source files and not its third party libraries implementation.
 
 ## Compile-time Security Controls
 
-We usually think of memory safety checks when we see compile-time security checks. However, we can extend compiler behaviors to check for potential runtime vulnerabilities like Insecure Deserialization, SQL Injections, etc. By performing these checks at the compilation layer, we can detect and handle such potential vulnerabilities before they manifest at runtimes.
+We usually think of memory safety checks when we see compile-time security checks. However, we can extend compiler behaviors to check for potential runtime vulnerabilities like Insecure Deserialization, SQL Injections, etc. By performing these checks at the compilation layer, we are able to scan the AST produced during the compilation phase, not the parsing phase.
+
+In the case of Java, the AST during the compilation phase has a richer semantics containing third party libraries implementation due to the dependency resolution. The dependency resolution will import the classes of the third party libraries. These classes contain the implementation of the libraries.
 
 The approach in modeling our detection and handling strategy consists of the following:
 1. Identify the root factors that contributes to the vulnerability
@@ -78,31 +103,34 @@ Lets model our detection and handling strategy from the Java code previously men
 
 Our application code:
 ```Java
-import com.deserailizagator.deserializer.Deserializagator;
+import com.dslz.Dslzgator;
 
 public class Main {
     public static void main(String[] args){
         byte[] serializedData = getUserInput();
-        MyCustomClass deserializedObject = Deserializagator.deserialize(serializedData, YourCustomClass.class);	
+        UserInfo userInfo = Dslzgator.deserialize(
+            serializedData, 
+            UserInfo.class
+        );	
     }
 }
 ```
 
 Third-party library code:
 ```Java
-package com.deserailizagator.deserializer;
+package com.dslz;
 
-public class Deserializagator {
+public class Dslzgator {
     public static <T> T deserialize(byte[] input, Class<T> clazz) {
-        T deserializedObject = null;
+        T userInfo = null;
             
         ByteArrayInputStream bais = new ByteArrayInputStream(input);
         ObjectInputStream ois = new ObjectInputStream(bais);    
-        deserializedObject = clazz.cast(ois.readObject());
+        userInfo = clazz.cast(ois.readObject());
             
         ois.close();
         bais.close();
-        return deserializedObject;
+        return userInfo;
     }
 }
 ```
@@ -126,7 +154,7 @@ Consider our security control specifically checking for the following sequence o
 What about other sequences of methods invoked that will still lead to the same vulnerability?
 
 
-![Fig 4. Alternate method chain](/static/images/blog/ctscbtgbs/figure-4.png)
+![Fig 4. Alternate method chain](figure-4.png)
 
 If our security control is tightly coupled to the sequence of methods invoked, then it is only limited to that case. This approach is not viable for implementing the control.
 
@@ -143,7 +171,7 @@ A simple but naive approach is to traverse the AST and detect for dangerous full
 The second approach is to leverage on the language metadata processing capabilities. In the case of Java, we can leverage Java annotations. If the method is known to be unsafe or can be used unsafely, the method can be annotated with an annotation to denote as such.
 
 ```Java
-package com.deserailizagator.deserializer;
+package com.dslz;
 
 @Retention(RUNTIME)
 @Target(METHOD)
@@ -157,18 +185,18 @@ public @interface Allow {
     @interface Unsafe
 }
 
-public class Deserializagator {
+public class Dslzgator {
     @Usafe
     public static <T> T deserialize(byte[] input, Class<T> clazz) {
-        T deserializedObject = null;
+        T userInfo = null;
             
         ByteArrayInputStream bais = new ByteArrayInputStream(input);
         ObjectInputStream ois = new ObjectInputStream(bais);    
-        deserializedObject = clazz.cast(ois.readObject());
+        userInfo = clazz.cast(ois.readObject());
             
         ois.close();
         bais.close();
-        return deserializedObject;
+        return userInfo;
     }
 }
 ```
@@ -179,21 +207,24 @@ Now when we use deserialize in our application, the compile-time security contro
 
 
 ```Java
-import com.deserailizagator.deserializer.Deserializagator;
-import com.deserailizagator.deserializer.Deserializagator.Allow;
+import com.dslz.Dslzgator;
+import com.dslz.Dslzgator.Allow;
 
 public class Main {
     @Allow.Unsafe
     public static void main(String[] args){
         byte[] serializedData = getUserInput();
-        MyCustomClass deserializedObject = Deserializagator.deserialize(serializedData, YourCustomClass.class);	
+        UserInfo userInfo = Dslzgator.deserialize(
+            serializedData, 
+            UserInfo.class
+        );	
     }
 }
 ```
 
 Below is an example of how the control can traverse the AST and perform its operation on whether to fail to build or not.
 
-![Fig 5. Compile-time security control for build](/static/images/blog/ctscbtgbs/figure-5.png)
+![Fig 5. Compile-time security control for build](figure-5.png)
 
 
 Using this approach requires the developers to explicitly annotate unsafe methods. This approach complements SAST tools as we can just detect for annotations like `@Allow.Unsafe` in the source code, and contribute to other security efforts like application security risk scoring, or visibility of where unsafe APIs/methods are used. Other teams like product security can leverage this to look out for low hanging fruits during secure code reviews.
@@ -210,9 +241,8 @@ The next disadvantage is that compile-time security controls may produce unexpec
 
 # Closing Remarks
 
-In conclusion, compile-time security controls can help bridge the gap beyond SAST as it checks and provides assurance at the compilation layer. These controls open the door to a broader security landscape, allowing for the development of application security risk scoring mechanisms and enhancing the visibility of where potentially unsafe APIs/methods are employed within your codebase.
+Compile-time security controls can help bridge the gap beyond SAST as it checks and provides assurance at the compilation layer. These controls open the door to a broader security landscape, allowing for the development of application security risk scoring mechanisms and enhancing the visibility of where potentially unsafe APIs/methods are employed within your codebase.
 
-It not only strengthens the security of your software but also empowers product security teams to identify low-hanging security issues during rigorous code reviews, further fortifying your application's defense.
+Supply chain attacks to third party packages are ever growing. The proposed strategy can help to alleviate effort in detecting malicious/insecure packages. 
 
-While implementing such controls may seem like it requires a substantial research and engineering effort, it is worth to consider to apply this strategy to your application security program.
-
+Here is an example of a compile-time security control that I developed for the jOOQ library, https://github.com/nicchongwb/kotlin-jooq-checker. I will most probably write an article on my research of Java and Kotlin compilation in the future, and the considerations and blockers faced when developing the compile-time security control.
