@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Blog - Nicholas Chong</title>
+    <title>Posts on Nicholas Ch&#39;s blog</title>
     <link>http://localhost:1313/posts/</link>
-    <description>Recent content in Posts on Blog - Nicholas Chong</description>
+    <description>Recent content in Posts on Nicholas Ch&#39;s blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate></lastBuildDate>
+    <lastBuildDate>Thu, 11 Jul 2024 15:56:35 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Compile-time Security Controls: Bridging the Gap Beyond SAST</title>
+      <link>http://localhost:1313/posts/compile-time-security-control/</link>
+      <pubDate>Thu, 11 Jul 2024 15:56:35 +0800</pubDate>
+      <guid>http://localhost:1313/posts/compile-time-security-control/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt;&#xA;&lt;em&gt;I am not a compiler expert. This article goal is to express the possibility of how we can look compile-time security controls for Application Security.&lt;/em&gt;&lt;/p&gt;&#xA;&lt;h1 id=&#34;what-is-sast&#34;&gt;What is SAST&lt;/h1&gt;&#xA;&lt;p&gt;Static Application Security Testing (SAST) involves the scanning of static application code before it is compiled. Many organizations rely on SAST to identify vulnerabilities in the initial stages of development. This article will explore the limitations of SAST and how we can fill these gaps with compile-time security controls. The article uses the Java programming language to demonstrate how compile-time security controls are applied to Java programs. However, the strategy can be applied to other compiled programming languages like C++, Go, Rust, etc.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Offensive Security Web Expert Review</title>
+      <link>http://localhost:1313/posts/oswe-review/</link>
+      <pubDate>Fri, 12 May 2023 17:07:19 +0800</pubDate>
+      <guid>http://localhost:1313/posts/oswe-review/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;oswe-logo.png&#34; alt=&#34;oswe&#34;&gt;&lt;/p&gt;&#xA;&lt;h1 id=&#34;precursor-to-the-coursework&#34;&gt;Precursor to the coursework&lt;/h1&gt;&#xA;&lt;p&gt;I started the OSWE coursework around the middle of 2022. Before that, I had done the following:&#xA;PortSwigger labs - SQLi, XSS, XXE, File upload vulnerabilities, Path traversal, Command Injection, Server-side template injection&#xA;Pentesterlab Pro - Essential badge, couple of Code review labs&#xA;Cleared the eLearnsecurity Professional Penetration Tester (eCPPTv2) certification&#xA;Constantly reading up disclosed bug bounty reports&lt;/p&gt;&#xA;&lt;p&gt;I also had done many different programming projects in Java, C/C++, Python, PHP, Javascript, SQL. It’s definitely beneficial to have a background in software development and having worked with different programming languages. Even if you don’t have such a background, achieving the OSWE is still possible because it mainly requires you to understand application logic flow in a language agnostic fashion.&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>

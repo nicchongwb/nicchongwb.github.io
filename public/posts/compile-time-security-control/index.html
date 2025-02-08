@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Disclaimer:
+I am not a compiler expert. This article goal is to express the possibility of how we can look compile-time security controls for Application Security.
+What is SAST
+Static Application Security Testing (SAST) involves the scanning of static application code before it is compiled. Many organizations rely on SAST to identify vulnerabilities in the initial stages of development. This article will explore the limitations of SAST and how we can fill these gaps with compile-time security controls. The article uses the Java programming language to demonstrate how compile-time security controls are applied to Java programs. However, the strategy can be applied to other compiled programming languages like C&#43;&#43;, Go, Rust, etc.">  
+
+  <title>
+    
+      Compile-time Security Controls: Bridging the Gap Beyond SAST
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.d21e6a19ea346f458ada43307d36e23a3fc456016a2a0ff21dd4f28d1029b5bd96f94ff0aff3fb25ce909d6821efc877f876e44d01fbe1d2648cd5ff58f6c070.css" integrity="sha512-0h5qGeo0b0WK2kMwfTbiOj/EVgFqKg/yHdTyjRAptb2W&#43;U/wr/P7Jc6QnWgh78h3&#43;HbkTQH74dJkjNX/WPbAcA==" />
+  
+</head>
+<body a="light">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">&lt; back</a>
+
+                    <p>
+                        <time datetime="2024-07-11 15:56:35 &#43;0800 &#43;08">
+                            2024-07-11
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>Compile-time Security Controls: Bridging the Gap Beyond SAST</h1>
+
+    
+
+    <p><strong>Disclaimer:</strong>
+<em>I am not a compiler expert. This article goal is to express the possibility of how we can look compile-time security controls for Application Security.</em></p>
+<h1 id="what-is-sast">What is SAST</h1>
+<p>Static Application Security Testing (SAST) involves the scanning of static application code before it is compiled. Many organizations rely on SAST to identify vulnerabilities in the initial stages of development. This article will explore the limitations of SAST and how we can fill these gaps with compile-time security controls. The article uses the Java programming language to demonstrate how compile-time security controls are applied to Java programs. However, the strategy can be applied to other compiled programming languages like C++, Go, Rust, etc.</p>
+<h1 id="the-limitations-of-sast">The limitations of SAST</h1>
+<p>A typical Secure Software Development Lifecycle (SSDLC) involves SAST and DAST (Dynamic Application Security Testing) for security assurance. One of the goals of SAST is to detect insecure code patterns by scanning the static code. SAST tools usually allow engineers to write rules for scanning, data flow analysis, or taint tracking. Assuming we know all the methods&rsquo; names that if used insecurely, will lead to common application vulnerabilities like SQL Injection, Deserialization, etc and write SAST rules to detect them.</p>
+<p>Does this guarantee that our application code meets our security requirements before it is built?</p>
+<p>No, SAST scans (as of the time of writing) only work with static sources like application source code. That means that the scan only sees as far as what it parses but it doesn’t have complete knowledge of the fully resolved Abstract Syntax Tree (AST).</p>
+<p><img src="figure-1.png" alt="Fig 1. Overview of SAST tool &amp; Compile-time Security Control."></p>
+<p>Let’s see an example of how SAST is not able to detect usage of dangerous methods. The code below is one of our application codes to be scanned by SAST. We see that a third-party library Deserializagator is used to deserialize our serializedData into a MyCustomClass class.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0cf;font-weight:bold">com.deserailizagator.deserializer.Deserializagator</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Main</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#078;font-weight:bold">void</span><span style="color:#bbb"> </span><span style="color:#c0f">main</span>(String<span style="color:#555">[]</span><span style="color:#bbb"> </span>args){<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#078;font-weight:bold">byte</span><span style="color:#555">[]</span><span style="color:#bbb"> </span>serializedData<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>getUserInput();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>MyCustomClass<span style="color:#bbb"> </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>Deserializagator.<span style="color:#309">deserialize</span>(serializedData,<span style="color:#bbb"> </span>YourCustomClass.<span style="color:#309">class</span>);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>The SAST tool will scan the code above without compiling it. The issue with this is that we don’t know if the implementation of <code>Deserializagator.deserialize()</code> is safe or not. Of course, one may argue that the third-party library can be audited and if unsafe, a SAST rule can be written. However, to account for all third-party libraries that may potentially provide APIs that have unsafe implementation may not be a viable solution.</p>
+<p>Let’s take a look at <code>Deserializagator.deserialize()</code> implementation.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">package</span><span style="color:#bbb"> </span><span style="color:#0cf;font-weight:bold">com.deserailizagator.deserializer</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Deserializagator</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#555">&lt;</span>T<span style="color:#555">&gt;</span><span style="color:#bbb"> </span>T<span style="color:#bbb"> </span><span style="color:#c0f">deserialize</span>(<span style="color:#078;font-weight:bold">byte</span><span style="color:#555">[]</span><span style="color:#bbb"> </span>input,<span style="color:#bbb"> </span>Class<span style="color:#555">&lt;</span>T<span style="color:#555">&gt;</span><span style="color:#bbb"> </span>clazz)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>T<span style="color:#bbb"> </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">null</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ByteArrayInputStream<span style="color:#bbb"> </span>bais<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">new</span><span style="color:#bbb"> </span>ByteArrayInputStream(input);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ObjectInputStream<span style="color:#bbb"> </span>ois<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">new</span><span style="color:#bbb"> </span>ObjectInputStream(bais);<span style="color:#bbb">  
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>clazz.<span style="color:#309">cast</span>(ois.<span style="color:#309">readObject</span>());<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ois.<span style="color:#309">close</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>bais.<span style="color:#309">close</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#069;font-weight:bold">return</span><span style="color:#bbb"> </span>deserializedObject;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>Readers with Java security source code review can immediately tell that the <code>deserialize()</code> method is vulnerable to Java deserialization attacks. For more information on Java deserialization attacks, take a look at <a href="https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html#whitebox-review_2">OWASP Cheatsheet - Deserialization</a>.</p>
+<p>In the case of Java programs, a build tool like Gradle or Maven is typically used for dependency resolution before the Java compiler compiles the program. The dependency resolution is responsible for locating and downloading third-party dependencies.</p>
+<p>The limitation of SAST tools is that it only scans code and not compile/build them. This means that SAST tools will not have complete knowledge of the fully resolved Abstract Syntax Tree (AST) generated during compilation.</p>
+<h2 id="compile-time-security-controls">Compile-time Security Controls</h2>
+<p>We usually think of memory safety checks when we see compile-time security checks. However, we can extend compiler behaviors to check for potential runtime vulnerabilities like Insecure Deserialization, SQL Injections, etc. By performing these checks at the compilation layer, we can detect and handle such potential vulnerabilities before they manifest at runtimes.</p>
+<p>The approach in modeling our detection and handling strategy consists of the following:</p>
+<ol>
+<li>Identify the root factors that contributes to the vulnerability</li>
+<li>Determine actions of security control</li>
+</ol>
+<p>The following are the requirements for compile-time security controls:</p>
+<ul>
+<li>Compiler able to be extended to custom compiler process</li>
+<li>Programming language able to support processing of metadata such as tags, annotations, etc.</li>
+</ul>
+<p>Lets model our detection and handling strategy from the Java code previously mentioned.</p>
+<p>Our application code:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0cf;font-weight:bold">com.deserailizagator.deserializer.Deserializagator</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Main</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#078;font-weight:bold">void</span><span style="color:#bbb"> </span><span style="color:#c0f">main</span>(String<span style="color:#555">[]</span><span style="color:#bbb"> </span>args){<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#078;font-weight:bold">byte</span><span style="color:#555">[]</span><span style="color:#bbb"> </span>serializedData<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>getUserInput();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>MyCustomClass<span style="color:#bbb"> </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>Deserializagator.<span style="color:#309">deserialize</span>(serializedData,<span style="color:#bbb"> </span>YourCustomClass.<span style="color:#309">class</span>);<span style="color:#bbb">	
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>Third-party library code:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">package</span><span style="color:#bbb"> </span><span style="color:#0cf;font-weight:bold">com.deserailizagator.deserializer</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Deserializagator</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#555">&lt;</span>T<span style="color:#555">&gt;</span><span style="color:#bbb"> </span>T<span style="color:#bbb"> </span><span style="color:#c0f">deserialize</span>(<span style="color:#078;font-weight:bold">byte</span><span style="color:#555">[]</span><span style="color:#bbb"> </span>input,<span style="color:#bbb"> </span>Class<span style="color:#555">&lt;</span>T<span style="color:#555">&gt;</span><span style="color:#bbb"> </span>clazz)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>T<span style="color:#bbb"> </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">null</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ByteArrayInputStream<span style="color:#bbb"> </span>bais<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">new</span><span style="color:#bbb"> </span>ByteArrayInputStream(input);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ObjectInputStream<span style="color:#bbb"> </span>ois<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">new</span><span style="color:#bbb"> </span>ObjectInputStream(bais);<span style="color:#bbb">    
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>clazz.<span style="color:#309">cast</span>(ois.<span style="color:#309">readObject</span>());<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ois.<span style="color:#309">close</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>bais.<span style="color:#309">close</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#069;font-weight:bold">return</span><span style="color:#bbb"> </span>deserializedObject;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>The vulnerability in scope is Insecure Deserialization. Java provides the native APIs ByteArrayInputStream and ObjectInputStream for deserialization. The issue with the <code>deserialize()</code> method is that there is no validation for the input byte array. Of course a potential patch will be adding a validation step to validate the input before streaming the bytes to an ObjectInputStream.</p>
+<p><img src="figure-2.png" alt="Fig 2. Implementation flow of deserialization method."></p>
+<p>We can implement a Java compiler plugin that traverses the Java AST and programmatically detect if an non-validated byte array is used for ByteArrayInputStream and ObjectInputStream. From there we can log compilation errors and fail the build.</p>
+<h2 id="approaching-compile-time-security-controls">Approaching Compile-time Security Controls</h2>
+<p>From the previous example, we can implement a compile-time security control to explicitly detect the sequential invocation of a series of dangerous APIs/methods. However, such a naive approach only accounts for 1 specific sequence of dangerous APIs/methods.</p>
+<p>Instead, we should consider that there are many ways that these such APIs/methods can be used and lead to a potential vulnerability like Insecure Deserialization. This adds to the complexity of the compile-time security control since it leverages on how the structure of the AST, and the structure of the AST is heavily determined by the code implementation.</p>
+<p>Consider our security control specifically checking for the following sequence of methods invoked.</p>
+<p><img src="figure-3.png" alt="Fig 3. Explicit check for methods chain"></p>
+<p>What about other sequences of methods invoked that will still lead to the same vulnerability?</p>
+<p><img src="/static/images/blog/ctscbtgbs/figure-4.png" alt="Fig 4. Alternate method chain"></p>
+<p>If our security control is tightly coupled to the sequence of methods invoked, then it is only limited to that case. This approach is not viable for implementing the control.</p>
+<p>There are 2 simpler approach to implement compile-time security control:</p>
+<ol>
+<li>Detecting Fully qualified name with method signature</li>
+<li>Metadata processing of known insecure methods</li>
+</ol>
+<h3 id="detecting-fully-qualified-method-name-and-signature">Detecting Fully Qualified Method Name and Signature</h3>
+<p>A simple but naive approach is to traverse the AST and detect for dangerous fully qualified names (package and classpath inclusive) of a method with its signature. With this approach, we don’t consider the sequence of methods called, as we only care if a specific method is present in the AST. However, there are drawbacks to this approach. We lack context of whether the method is used securely or not because some methods are only dangerous when used in conjunction with other methods.</p>
+<h2 id="metadata-processing-of-known-insecure-methods">Metadata processing of known insecure methods</h2>
+<p>The second approach is to leverage on the language metadata processing capabilities. In the case of Java, we can leverage Java annotations. If the method is known to be unsafe or can be used unsafely, the method can be annotated with an annotation to denote as such.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">package</span><span style="color:#bbb"> </span><span style="color:#0cf;font-weight:bold">com.deserailizagator.deserializer</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#99f">@Retention</span>(RUNTIME)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#99f">@Target</span>(METHOD)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#99f">@interface</span><span style="color:#bbb"> </span>Unsafe<span style="color:#bbb"> </span>{}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#99f">@Retention</span>(RUNTIME)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#99f">@Target</span>({METHOD,<span style="color:#bbb"> </span>CONSTRUCTOR,<span style="color:#bbb"> </span>TYPE})<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#99f">@interface</span><span style="color:#bbb"> </span>Allow<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#99f">@Retention</span>(RUNTIME)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#99f">@Target</span>(METHOD)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#99f">@interface</span><span style="color:#bbb"> </span>Unsafe<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Deserializagator</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#99f">@Usafe</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#555">&lt;</span>T<span style="color:#555">&gt;</span><span style="color:#bbb"> </span>T<span style="color:#bbb"> </span><span style="color:#c0f">deserialize</span>(<span style="color:#078;font-weight:bold">byte</span><span style="color:#555">[]</span><span style="color:#bbb"> </span>input,<span style="color:#bbb"> </span>Class<span style="color:#555">&lt;</span>T<span style="color:#555">&gt;</span><span style="color:#bbb"> </span>clazz)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>T<span style="color:#bbb"> </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">null</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ByteArrayInputStream<span style="color:#bbb"> </span>bais<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">new</span><span style="color:#bbb"> </span>ByteArrayInputStream(input);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ObjectInputStream<span style="color:#bbb"> </span>ois<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">new</span><span style="color:#bbb"> </span>ObjectInputStream(bais);<span style="color:#bbb">    
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>clazz.<span style="color:#309">cast</span>(ois.<span style="color:#309">readObject</span>());<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>ois.<span style="color:#309">close</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>bais.<span style="color:#309">close</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#069;font-weight:bold">return</span><span style="color:#bbb"> </span>deserializedObject;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>The code above is the same <code>deserialize()</code> method but this time annotated with the <code>@Unsafe</code> annotation. Also note that there is another annotation <code>@Allow.Unsafe</code> which is used for the compile-time security control to relax the control.</p>
+<p>Now when we use deserialize in our application, the compile-time security control will be able to detect that deserialize has the <code>@Unsafe</code> annotation. However, we can also annotate the immediate parent scope of where deserialize is called with <code>@Allow.Unsafe</code> to relax the control.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0cf;font-weight:bold">com.deserailizagator.deserializer.Deserializagator</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0cf;font-weight:bold">com.deserailizagator.deserializer.Deserializagator.Allow</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Main</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#99f">@Allow.Unsafe</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#069;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#069;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#078;font-weight:bold">void</span><span style="color:#bbb"> </span><span style="color:#c0f">main</span>(String<span style="color:#555">[]</span><span style="color:#bbb"> </span>args){<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#078;font-weight:bold">byte</span><span style="color:#555">[]</span><span style="color:#bbb"> </span>serializedData<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>getUserInput();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>MyCustomClass<span style="color:#bbb"> </span>deserializedObject<span style="color:#bbb"> </span><span style="color:#555">=</span><span style="color:#bbb"> </span>Deserializagator.<span style="color:#309">deserialize</span>(serializedData,<span style="color:#bbb"> </span>YourCustomClass.<span style="color:#309">class</span>);<span style="color:#bbb">	
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>Below is an example of how the control can traverse the AST and perform its operation on whether to fail to build or not.</p>
+<p><img src="/static/images/blog/ctscbtgbs/figure-5.png" alt="Fig 5. Compile-time security control for build"></p>
+<p>Using this approach requires the developers to explicitly annotate unsafe methods. This approach complements SAST tools as we can just detect for annotations like <code>@Allow.Unsafe</code> in the source code, and contribute to other security efforts like application security risk scoring, or visibility of where unsafe APIs/methods are used. Other teams like product security can leverage this to look out for low hanging fruits during secure code reviews.</p>
+<p>With all that said, having a feature like Java annotations in a compiled programming language can be very useful for implementing compile-time security controls. Programming Language developers should consider this as a First Class feature and also provide Compiler APIs for other developers to extend the compilation process if they already have not done so.</p>
+<h1 id="disadvantages-of-compile-time-security-controls">Disadvantages of Compile-time Security Controls</h1>
+<p>The most obvious disadvantage is to maintain compile-time security controls for every techstack. This is because such controls interface with the compilation layer of the targeted techstack. Almost every technology in the stack has their own unique compilation system. Take for example JVM languages such as Java and Kotlin. There are libraries that can work on both Java and Kotlin (JVM). You will need to implement compile-time security controls for each Java and Kotlin (JVM) because they have different compilers.</p>
+<p>Extending the compilation process for such security controls will likely involve some level of technical understanding of the compiler itself. Also, some compilers may not provide stable compiler APIs to allow developers to extend the compilation process. These compiler APIs are prone to changes or may not even be well maintained as they are usually not the main priority of programming language developers. This will hinder engineering efforts in developing such controls. Hence, implementing these controls may require a considerable amount of time and effort.</p>
+<p>The next disadvantage is that compile-time security controls may produce unexpected results during compilation time. These controls may produce unwanted side-effects on the application compilation time. This is especially true if the control is modifying the AST before the bytecode/executable code is produced.</p>
+<h1 id="closing-remarks">Closing Remarks</h1>
+<p>In conclusion, compile-time security controls can help bridge the gap beyond SAST as it checks and provides assurance at the compilation layer. These controls open the door to a broader security landscape, allowing for the development of application security risk scoring mechanisms and enhancing the visibility of where potentially unsafe APIs/methods are employed within your codebase.</p>
+<p>It not only strengthens the security of your software but also empowers product security teams to identify low-hanging security issues during rigorous code reviews, further fortifying your application&rsquo;s defense.</p>
+<p>While implementing such controls may seem like it requires a substantial research and engineering effort, it is worth to consider to apply this strategy to your application security program.</p>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

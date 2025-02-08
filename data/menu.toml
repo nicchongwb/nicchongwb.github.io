@@ -1,0 +1,8 @@
+[[entries]]
+title = "all posts"
+
+  [entries.post_list]
+  limit = 10
+  show_more = true
+  show_more_text = "view archive..."
+  show_more_url = "content/posts"
