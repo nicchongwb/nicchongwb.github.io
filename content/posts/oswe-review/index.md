@@ -9,23 +9,24 @@ title = 'Offensive Security Web Expert Review'
 # Precursor to the coursework
 
 I started the OSWE coursework around the middle of 2022. Before that, I had done the following:
-PortSwigger labs - SQLi, XSS, XXE, File upload vulnerabilities, Path traversal, Command Injection, Server-side template injection 
-Pentesterlab Pro - Essential badge, couple of Code review labs
-Cleared the eLearnsecurity Professional Penetration Tester (eCPPTv2) certification
-Constantly reading up disclosed bug bounty reports
+- PortSwigger labs - SQLi, XSS, XXE, File upload vulnerabilities, Path traversal, Command Injection, Server-side template injection 
+- Pentesterlab Pro - Essential badge, couple of Code review labs
+- Cleared the eLearnsecurity Professional Penetration Tester (eCPPTv2) certification
+- Constantly reading up disclosed bug bounty reports
 
 I also had done many different programming projects in Java, C/C++, Python, PHP, Javascript, SQL. It’s definitely beneficial to have a background in software development and having worked with different programming languages. Even if you don’t have such a background, achieving the OSWE is still possible because it mainly requires you to understand application logic flow in a language agnostic fashion.
 
 For those who lack such experience, I highly recommend picking up Python (freecodecamp youtube) for writing your exploit scripts. Also, learn basic SQL (again, freecodecamp). Work on the PortSwigger labs and also write python scripts that can solve those labs. 
 
 Next, create a simple web application using Vanilla PHP with a Model View Controller (MVC) architecture. *vanilla means pure, in this case pure PHP without relying on web frameworks like Laravel*. Your application will be a forum that have the following features:
-Account features - sign up, login, logout
-User features - upload profile image, edit name, email, change password
-Forum - create post (requires user to be authenticated)
+- Account features - sign up, login, logout
+- User features - upload profile image, edit name, email, change password
+- Forum - create post (requires user to be authenticated)
 
 You don’t need to make the web application pretty. Just make sure the application logic works. It should include a database of your choice. I recommend SQLite to keep things simple.
 
 Why build this application?
+
 Understanding MVC architecture is important for anyone that is working/exploiting web applications. Building an application gives you a developer perspective, something that is really lacking in many cybersecurity practitioners in my humble opinion. Can’t secure what you don’t understand.
 
 # What is OSWE about?
