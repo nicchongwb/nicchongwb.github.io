@@ -3,10 +3,6 @@ languageCode = 'en-us'
 title = "Nicholas Ch's blog"
 theme = 'nostyleplease'
 
-[services]
-  [services.googleAnalytics]
-    ID = 'G-9FZJRF0DC2'
-
 # themes/nostyleplease/config.toml
 [module]
   [module.hugoVersion]
