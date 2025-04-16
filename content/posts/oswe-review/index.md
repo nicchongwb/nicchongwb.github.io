@@ -46,11 +46,12 @@ Remember, you are not here to be a script kiddie. Web exploitation is not about 
 You are provided with the source code, so use this to build your intuition of identifying vulnerabilities. 
 
 # Taking the exam
+
 I recommend to do the following:
 
-Have your template scripts for different vulnerabilities
-Notes on how to set up your debugging environment, like using VSCode debugger, enabling logging on Web Application Services such as Database logging, decompiling binaries/packages.
-Notes on the different quirks of different programming languages (e.g. string concatenation in PHP vs Python)
+- Have your template scripts for different vulnerabilities
+- Notes on how to set up your debugging environment, like using VSCode debugger, enabling logging on Web Application Services such as Database logging, decompiling binaries/packages.
+- Notes on the different quirks of different programming languages (e.g. string concatenation in PHP vs Python)
 
 Lastly, have a strategy/methodology in how you want to approach the target. My strategy is to look for files that list all the routes. Take note of which requires authentication and not. Review pre-authentication routes logic flow to see how you can exploit them to get you a user session. It’s all about the sources and sinks (iykyk). 
 
