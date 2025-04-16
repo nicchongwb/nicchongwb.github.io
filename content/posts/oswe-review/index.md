@@ -1,7 +1,7 @@
 +++
 date = '2023-05-12T17:07:19+08:00'
 draft = false
-title = 'Offensive Security Web Expert Review'
+title = 'Offensive Security Web Expert (OSWE) Review'
 +++
 
 ![oswe](oswe-logo.png)
@@ -39,7 +39,7 @@ The practical exam is 47 hours 35 minutes where your goal is to get at least 85 
 
 # Making full use of the coursework
 
-Depending on your duration of lab access, try and complete at least 85% of the coursework, including the extra miles (unguided labs). The extra miles are labs that don’t have any solutions from the provided coursework documents. They are the best way to test your understanding in the methodology taught.
+Depending on your duration of lab access, try to complete at least 85% of the coursework, including the extra miles (unguided labs). The extra miles are labs that don’t have any solutions from the provided coursework documents. They are the best way to test your understanding in the methodology taught.
 
 Remember, you are not here to be a script kiddie. Web exploitation is not about spraying payloads, hoping that one of them gets triggered. Always apply a first principle mindset into why this vulnerability can be triggered. Peel the layers, find out the root cause and retrace back your steps to the initial point of entry.
 
@@ -47,6 +47,7 @@ You are provided with the source code, so use this to build your intuition of id
 
 # Taking the exam
 I recommend to do the following:
+
 Have your template scripts for different vulnerabilities
 Notes on how to set up your debugging environment, like using VSCode debugger, enabling logging on Web Application Services such as Database logging, decompiling binaries/packages.
 Notes on the different quirks of different programming languages (e.g. string concatenation in PHP vs Python)
