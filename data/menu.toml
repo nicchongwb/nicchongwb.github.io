@@ -1,8 +1,19 @@
 [[entries]]
 title = "all posts"
 
-  [entries.post_list]
-  limit = 10
-  show_more = true
-  show_more_text = "view archive..."
-  show_more_url = "content/posts"
+[entries.post_list]
+section = "posts"
+limit = 5
+show_more = true
+show_more_text = "view archive..."
+show_more_url = "content/posts"
+
+[[entries]]
+title = "ctf writeups"
+
+[entries.post_list]
+section = "ctf-writeups"
+limit = 5
+show_more = true
+show_more_text = "view archive..."
+show_more_url = "content/ctf-writeups"

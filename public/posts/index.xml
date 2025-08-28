@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Nicholas Ch&#39;s blog</title>
+    <title>Nicholas Ch&#39;s blog</title>
     <link>http://localhost:1313/posts/</link>
-    <description>Recent content in Posts on Nicholas Ch&#39;s blog</description>
+    <description>Recent content on Nicholas Ch&#39;s blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 11 Jul 2024 15:56:35 +0800</lastBuildDate>
@@ -16,7 +16,7 @@
       <description>&lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt; &lt;em&gt;I am not a compiler expert. This article&amp;rsquo;s goal is to express the possibility of how we can look at compile-time security controls for Application Security.&lt;/em&gt;&lt;/p&gt;&#xA;&lt;h1 id=&#34;what-is-sast&#34;&gt;What is SAST?&lt;/h1&gt;&#xA;&lt;p&gt;Static Application Security Testing (SAST) involves the scanning of static application code before it is compiled. The scan usually involves a parser to check for security vulnerabilities before the code is compiled.&lt;/p&gt;&#xA;&lt;h1 id=&#34;the-limitations-of-sast&#34;&gt;The limitations of SAST&lt;/h1&gt;&#xA;&lt;p&gt;SAST scanners will look for known or configured insecure coding patterns by parsing source files. Parsing source files typically involves building an abstract syntax tree (AST) data structure, where each node represents a specific token and its relationship with other tokens. However, the limitation of SAST scanners is the lack of richer semantics of each token.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Offensive Security Web Expert Review</title>
+      <title>Offensive Security Web Expert (OSWE) Review</title>
       <link>http://localhost:1313/posts/oswe-review/</link>
       <pubDate>Fri, 12 May 2023 17:07:19 +0800</pubDate>
       <guid>http://localhost:1313/posts/oswe-review/</guid>

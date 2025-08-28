@@ -16,7 +16,7 @@ I also had done many different programming projects in Java, C/C&#43;&#43;, Pyth
 
   <title>
     
-      Offensive Security Web Expert Review
+      Offensive Security Web Expert (OSWE) Review
     
   </title>
 
@@ -26,8 +26,7 @@ I also had done many different programming projects in Java, C/C&#43;&#43;, Pyth
   
   
   <link rel="stylesheet" href="/css/main.d21e6a19ea346f458ada43307d36e23a3fc456016a2a0ff21dd4f28d1029b5bd96f94ff0aff3fb25ce909d6821efc877f876e44d01fbe1d2648cd5ff58f6c070.css" integrity="sha512-0h5qGeo0b0WK2kMwfTbiOj/EVgFqKg/yHdTyjRAptb2W&#43;U/wr/P7Jc6QnWgh78h3&#43;HbkTQH74dJkjNX/WPbAcA==" />
-  
-</head>
+  </head>
 <body a="light">
         <main class="page-content" aria-label="Content">
             <div class="w">
@@ -42,7 +41,7 @@ I also had done many different programming projects in Java, C/C&#43;&#43;, Pyth
                 </div>
 
 <article>
-    <h1>Offensive Security Web Expert Review</h1>
+    <h1>Offensive Security Web Expert (OSWE) Review</h1>
 
     
 
@@ -71,14 +70,16 @@ I also had done many different programming projects in Java, C/C&#43;&#43;, Pyth
 <p>The course includes many exercises in reviewing applications from different technology stacks and frameworks like PHP, Python, NodeJS, Java, C#, PostgreSQL, MSSQL, etc.</p>
 <p>The practical exam is 47 hours 35 minutes where your goal is to get at least 85 out of 100 points. The objective is to write a single exploit script per target that will exploit the web application from pre-authentication to post-authentication and to get a reverse shell connection back to your listener.</p>
 <h1 id="making-full-use-of-the-coursework">Making full use of the coursework</h1>
-<p>Depending on your duration of lab access, try and complete at least 85% of the coursework, including the extra miles (unguided labs). The extra miles are labs that don’t have any solutions from the provided coursework documents. They are the best way to test your understanding in the methodology taught.</p>
+<p>Depending on your duration of lab access, try to complete at least 85% of the coursework, including the extra miles (unguided labs). The extra miles are labs that don’t have any solutions from the provided coursework documents. They are the best way to test your understanding in the methodology taught.</p>
 <p>Remember, you are not here to be a script kiddie. Web exploitation is not about spraying payloads, hoping that one of them gets triggered. Always apply a first principle mindset into why this vulnerability can be triggered. Peel the layers, find out the root cause and retrace back your steps to the initial point of entry.</p>
 <p>You are provided with the source code, so use this to build your intuition of identifying vulnerabilities.</p>
 <h1 id="taking-the-exam">Taking the exam</h1>
-<p>I recommend to do the following:
-Have your template scripts for different vulnerabilities
-Notes on how to set up your debugging environment, like using VSCode debugger, enabling logging on Web Application Services such as Database logging, decompiling binaries/packages.
-Notes on the different quirks of different programming languages (e.g. string concatenation in PHP vs Python)</p>
+<p>I recommend to do the following:</p>
+<ul>
+<li>Have your template scripts for different vulnerabilities</li>
+<li>Notes on how to set up your debugging environment, like using VSCode debugger, enabling logging on Web Application Services such as Database logging, decompiling binaries/packages.</li>
+<li>Notes on the different quirks of different programming languages (e.g. string concatenation in PHP vs Python)</li>
+</ul>
 <p>Lastly, have a strategy/methodology in how you want to approach the target. My strategy is to look for files that list all the routes. Take note of which requires authentication and not. Review pre-authentication routes logic flow to see how you can exploit them to get you a user session. It’s all about the sources and sinks (iykyk).</p>
 <p>Always aim for low-hanging fruits and test them using Burp. I won’t bother with scripting unless I manage to get one vulnerability that takes me closer to the goal of getting a user session. Take note of all vulnerabilities you found because you will most probably have to chain them.</p>
 <p>Know what parameters you can control, observe how they are being processed/filtered/sanitized as they are passed to other functions. Again, it’s better to use a breadth first search strategy and only a depth first search once you manage to obtain significant progress. Understanding the rough sense of how the application is structured will give you a better advantage as time passes, as compared to just hitting on one section of the code in the beginning.</p>

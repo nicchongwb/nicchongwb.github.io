@@ -9,16 +9,18 @@ title = 'Offensive Security Web Expert (OSWE) Review'
 # Precursor to the coursework
 
 I started the OSWE coursework around the middle of 2022. Before that, I had done the following:
-- PortSwigger labs - SQLi, XSS, XXE, File upload vulnerabilities, Path traversal, Command Injection, Server-side template injection 
+
+- PortSwigger labs - SQLi, XSS, XXE, File upload vulnerabilities, Path traversal, Command Injection, Server-side template injection
 - Pentesterlab Pro - Essential badge, couple of Code review labs
 - Cleared the eLearnsecurity Professional Penetration Tester (eCPPTv2) certification
 - Constantly reading up disclosed bug bounty reports
 
 I also had done many different programming projects in Java, C/C++, Python, PHP, Javascript, SQL. It’s definitely beneficial to have a background in software development and having worked with different programming languages. Even if you don’t have such a background, achieving the OSWE is still possible because it mainly requires you to understand application logic flow in a language agnostic fashion.
 
-For those who lack such experience, I highly recommend picking up Python (freecodecamp youtube) for writing your exploit scripts. Also, learn basic SQL (again, freecodecamp). Work on the PortSwigger labs and also write python scripts that can solve those labs. 
+For those who lack such experience, I highly recommend picking up Python (freecodecamp youtube) for writing your exploit scripts. Also, learn basic SQL (again, freecodecamp). Work on the PortSwigger labs and also write python scripts that can solve those labs.
 
-Next, create a simple web application using Vanilla PHP with a Model View Controller (MVC) architecture. *vanilla means pure, in this case pure PHP without relying on web frameworks like Laravel*. Your application will be a forum that have the following features:
+Next, create a simple web application using Vanilla PHP with a Model View Controller (MVC) architecture. _vanilla means pure, in this case pure PHP without relying on web frameworks like Laravel_. Your application will be a forum that have the following features:
+
 - Account features - sign up, login, logout
 - User features - upload profile image, edit name, email, change password
 - Forum - create post (requires user to be authenticated)
@@ -31,7 +33,7 @@ Understanding MVC architecture is important for anyone that is working/exploitin
 
 # What is OSWE about?
 
-This is my take after finishing the course and achieving the certification. OSWE mainly focuses on secure code review of large application code bases. Web security is an evolving field, OSWE doesn’t cover the latest web exploitation techniques, but it does give you insights to why certain vulnerabilities exist by reviewing the code. 
+This is my take after finishing the course and achieving the certification. OSWE mainly focuses on secure code review of large application code bases. Web security is an evolving field, OSWE doesn’t cover the latest web exploitation techniques, but it does give you insights to why certain vulnerabilities exist by reviewing the code.
 
 The course includes many exercises in reviewing applications from different technology stacks and frameworks like PHP, Python, NodeJS, Java, C#, PostgreSQL, MSSQL, etc.
 
@@ -43,7 +45,7 @@ Depending on your duration of lab access, try to complete at least 85% of the co
 
 Remember, you are not here to be a script kiddie. Web exploitation is not about spraying payloads, hoping that one of them gets triggered. Always apply a first principle mindset into why this vulnerability can be triggered. Peel the layers, find out the root cause and retrace back your steps to the initial point of entry.
 
-You are provided with the source code, so use this to build your intuition of identifying vulnerabilities. 
+You are provided with the source code, so use this to build your intuition of identifying vulnerabilities.
 
 # Taking the exam
 
@@ -53,11 +55,11 @@ I recommend to do the following:
 - Notes on how to set up your debugging environment, like using VSCode debugger, enabling logging on Web Application Services such as Database logging, decompiling binaries/packages.
 - Notes on the different quirks of different programming languages (e.g. string concatenation in PHP vs Python)
 
-Lastly, have a strategy/methodology in how you want to approach the target. My strategy is to look for files that list all the routes. Take note of which requires authentication and not. Review pre-authentication routes logic flow to see how you can exploit them to get you a user session. It’s all about the sources and sinks (iykyk). 
+Lastly, have a strategy/methodology in how you want to approach the target. My strategy is to look for files that list all the routes. Take note of which requires authentication and not. Review pre-authentication routes logic flow to see how you can exploit them to get you a user session. It’s all about the sources and sinks (iykyk).
 
 Always aim for low-hanging fruits and test them using Burp. I won’t bother with scripting unless I manage to get one vulnerability that takes me closer to the goal of getting a user session. Take note of all vulnerabilities you found because you will most probably have to chain them.
 
-Know what parameters you can control, observe how they are being processed/filtered/sanitized as they are passed to other functions. Again, it’s better to use a breadth first search strategy and only a depth first search once you manage to obtain significant progress. Understanding the rough sense of how the application is structured will give you a better advantage as time passes, as compared to just hitting on one section of the code in the beginning. 
+Know what parameters you can control, observe how they are being processed/filtered/sanitized as they are passed to other functions. Again, it’s better to use a breadth first search strategy and only a depth first search once you manage to obtain significant progress. Understanding the rough sense of how the application is structured will give you a better advantage as time passes, as compared to just hitting on one section of the code in the beginning.
 
 The holy grail that determines if you can pass or not: debugging (breakpoints, function stack traces) and logging (SQL, Web server)
 

