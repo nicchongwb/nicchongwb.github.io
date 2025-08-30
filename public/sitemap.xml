@@ -2,10 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/ctf-writeups/intigriti/1021-halloween-has-taken-over/</loc>
-    <lastmod>2025-01-27T17:07:19+08:00</lastmod>
+    <loc>http://localhost:1313/ctf-writeups/intigriti/1121-owasp-top-10/</loc>
+    <lastmod>2025-02-04T17:07:19+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/ctf-writeups/google-ctf/google-chall/</loc>
+    <loc>http://localhost:1313/ctf-writeups/intigriti/1021-halloween-has-taken-over/</loc>
     <lastmod>2025-01-27T17:07:19+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/compile-time-security-control/</loc>
@@ -18,9 +18,6 @@
     <lastmod>2022-08-25T21:30:04+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/ctf-writeups/</loc>
-    <lastmod>2022-08-25T21:30:04+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/ctf-writeups/google-ctf/</loc>
     <lastmod>2022-08-25T21:30:04+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/ctf-writeups/intigriti/</loc>
