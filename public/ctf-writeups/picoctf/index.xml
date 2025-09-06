@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Nicholas Ch&#39;s blog</title>
+    <link>http://localhost:1313/ctf-writeups/picoctf/</link>
+    <description>Recent content on Nicholas Ch&#39;s blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 01 Dec 2024 17:07:19 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/ctf-writeups/picoctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PicoCTF Web Easy Writeup</title>
+      <link>http://localhost:1313/ctf-writeups/picoctf/picoctf-web-easy/</link>
+      <pubDate>Sun, 01 Dec 2024 17:07:19 +0800</pubDate>
+      <guid>http://localhost:1313/ctf-writeups/picoctf/picoctf-web-easy/</guid>
+      <description>&lt;h1 id=&#34;sst1&#34;&gt;SST1&lt;/h1&gt;&#xA;&lt;p&gt;I made a cool website where you can announce whatever you want! Try it out.&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;a.png&#34; alt=&#34;a&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;Response header suggests it is a Python web server. It can be either a Twig (PHP) or Jinja2 (Python) templating engine.&lt;/p&gt;&#xA;&lt;p&gt;Let&amp;rsquo;s go with Jinja first. We can perform SSTI by abusing the MRO function to display classes. The MRO will list the order in which the hierarchy of classes will be handled, we can take advantage of the fact that it lists the classes, to select the one we want. This will help us select the necessary gadgets and chain them to achieve our objective.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

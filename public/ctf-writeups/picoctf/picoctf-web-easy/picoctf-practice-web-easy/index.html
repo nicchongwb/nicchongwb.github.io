@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="SST1
+#ssti
+I made a cool website where you can announce whatever you want! Try it out!
+Page is vulnerable to SSTI
+
+Response header suggests it is a Python web server. It can be either a Twig (PHP) or Jinja2 (Python) templating engine.
+Let&rsquo;s go with Jinja first. We can perform SSTI by abusing the MRO function to display classes. The MRO will list the order in which the hierarchy of classes will be handled, we can take advantage of the fact that it lists the classes, to select the one we want. This will help us select the necessary gadgets and chain them to achieve our objective.">  
+
+  <title>
+    
+      PicoCTF Web Easy
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.d21e6a19ea346f458ada43307d36e23a3fc456016a2a0ff21dd4f28d1029b5bd96f94ff0aff3fb25ce909d6821efc877f876e44d01fbe1d2648cd5ff58f6c070.css" integrity="sha512-0h5qGeo0b0WK2kMwfTbiOj/EVgFqKg/yHdTyjRAptb2W&#43;U/wr/P7Jc6QnWgh78h3&#43;HbkTQH74dJkjNX/WPbAcA==" />
+  </head>
+<body a="light">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+<a href="/">&lt; back</a>
+
+
+<article>
+    <p class="post-meta">
+        <time datetime="2024-12-01 17:07:19 &#43;0800 &#43;08">
+            2024-12-01
+        </time>
+    </p>
+
+    <h1>PicoCTF Web Easy</h1>
+
+    
+
+    <h1 id="sst1">SST1</h1>
+<p>#ssti
+I made a cool website where you can announce whatever you want! Try it out!</p>
+<p>Page is vulnerable to SSTI</p>
+<p><img src="ff5f8374f5780d61ce0c531a6dd793e8f2e813df.png" alt="a"></p>
+<p>Response header suggests it is a Python web server. It can be either a Twig (PHP) or Jinja2 (Python) templating engine.</p>
+<p>Let&rsquo;s go with Jinja first. We can perform SSTI by abusing the MRO function to display classes. The MRO will list the order in which the hierarchy of classes will be handled, we can take advantage of the fact that it lists the classes, to select the one we want. This will help us select the necessary gadgets and chain them to achieve our objective.</p>
+<p>What is MRO?
+Method Resolution Order (MRO) is the order in which Python looks for a method in a hierarchy of classes. It plays a vital role in the context of multiple inheritance as single method may be found in multiple super classes.</p>
+<p>We can see the classes imported into the Python application runtime. Jinja2 was found which confirms our suspicion of the templating engine.
+<!-- raw HTML omitted --></p>
+<p>We can perform RCE via SSTI by importing <code>os</code> into the Python runtime and using its functions.
+<!-- raw HTML omitted --></p>
+<p>Check the current directory, and we see that we are in the web root.
+<!-- raw HTML omitted --></p>
+<p>Cat the flag via SSTI RCE
+<!-- raw HTML omitted --></p>
+<h1 id="n0s4n1ty-1">n0s4n1ty 1</h1>
+<p>#file-upload</p>
+<p>A developer has added profile picture upload functionality to a website. However, the implementation is flawed, and it presents an opportunity for you. Your mission, should you choose to accept it, is to navigate to the provided web page and locate the file upload area. Your ultimate goal is to find the hidden flag located in the /root directory.</p>
+<p>Uploading a file request
+<!-- raw HTML omitted --></p>
+<p><a href="http://standard-pizzas.picoctf.net:55056/uploads/">http://standard-pizzas.picoctf.net:55056/uploads/</a>
+403 - No directory listing</p>
+<p>But we can access our uploaded file in the following path. This suggest that the upload directory maybe the same as the web server. We may be able to upload a web shell to perform RCE.
+<a href="http://standard-pizzas.picoctf.net:55056/uploads/random.png">http://standard-pizzas.picoctf.net:55056/uploads/random.png</a></p>
+<p>Wappalyzer suggest that the server is PHP. The response Server header also suggest it.</p>
+<p>Upload a simple php web shell
+<!-- raw HTML omitted --></p>
+<p>There is no file upload protection and also PHP code can run in the specified directory. We are able to execute PHP in /uploads directory.</p>
+<!-- raw HTML omitted -->
+<p>We are not able to ls -la /root as our webshell (www-data) is not root. However, we can perform sudo with all commands based on our sudo privileges.
+<!-- raw HTML omitted --></p>
+<p>Use sudo to list the /root directory and get the flag
+<!-- raw HTML omitted --></p>
+<h1 id="cookie-monster-secret-recipe">Cookie Monster Secret Recipe</h1>
+<p>Cookie Monster has hidden his top-secret cookie recipe somewhere on his website. As an aspiring cookie detective, your mission is to uncover this delectable secret. Can you outsmart Cookie Monster and find the hidden recipe?</p>
+<p>This challenge is straightforward. Just attempt a login and then look at the response Set-Cookie header.</p>
+<!-- raw HTML omitted -->
+<p>Cookie looks like its base64 encoded, just decode it to get the flag.</p>
+<h1 id="webdecode">WebDecode</h1>
+<p>Do you know how to use the web inspector?</p>
+<p>Again, another straight forward challenge.
+view-source:http://titan.picoctf.net:61320/about.html</p>
+<p><!-- raw HTML omitted -->
+Base64 decode the attribute value to get the flag.</p>
+<p>Challenge suggests to use web inspector. You can view source too. It&rsquo;s good to understand the difference between inspecting and viewing source but thats topic for another day.</p>
+<h1 id="unminify">Unminify</h1>
+<p>I don&rsquo;t like scrolling down to read the code of my website, so I&rsquo;ve squished it. As a bonus, my pages load faster!</p>
+<p>Another very straight forward challenge simillar to WebDecode. Just view source or inpsect the HTML loaded in the DOM to get the flag.</p>
+<!-- raw HTML omitted -->
+<h1 id="introtoburp">IntroToBurp</h1>
+<p>When we submit the registration form we will be redirected to a page to submit OTP.</p>
+<!-- raw HTML omitted -->
+<p>We can try to remove the change the request method, remove value of OTP, remove OTP parameter entirely.</p>
+<p>To get the flag, remove the body parameter otp=1234. Do note that you should still keep a CRLF at the end the request.</p>
+<!-- raw HTML omitted -->
+<h1 id="bookmarklet">Bookmarklet</h1>
+<p>Why search for the flag when I can make a bookmarklet to print it for me?</p>
+<p><!-- raw HTML omitted -->
+Copy the Javascript code into Console (Developer&rsquo;s tool) and run it to get the flag displayed in the window pop up.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>javascript<span style="color:#555">:</span> (<span style="color:#069;font-weight:bold">function</span> () {
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">var</span> encryptedFlag <span style="color:#555">=</span> <span style="color:#c30">&#34;àÒÆÞ¦È¬ëÙ£ÖÓÚåÛÑ¢ÕÓÉÕËÆÒÇÚËí&#34;</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">var</span> key <span style="color:#555">=</span> <span style="color:#c30">&#34;picoctf&#34;</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">var</span> decryptedFlag <span style="color:#555">=</span> <span style="color:#c30">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#069;font-weight:bold">for</span> (<span style="color:#069;font-weight:bold">var</span> i <span style="color:#555">=</span> <span style="color:#f60">0</span>; i <span style="color:#555">&lt;</span> encryptedFlag.length; i<span style="color:#555">++</span>) {
+</span></span><span style="display:flex;"><span>    decryptedFlag <span style="color:#555">+=</span> <span style="color:#366">String</span>.fromCharCode(
+</span></span><span style="display:flex;"><span>      (encryptedFlag.charCodeAt(i) <span style="color:#555">-</span> key.charCodeAt(i <span style="color:#555">%</span> key.length) <span style="color:#555">+</span> <span style="color:#f60">256</span>) <span style="color:#555">%</span> <span style="color:#f60">256</span>
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  alert(decryptedFlag);
+</span></span><span style="display:flex;"><span>})();
+</span></span></code></pre></div><h1 id="local-authority">Local Authority</h1>
+<p>Can you get the flag?</p>
+<p>Sample login request
+<!-- raw HTML omitted --></p>
+<p>Login response discloses some application logic and endpoints.</p>
+<p>/admin.php
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted --></p>
+<p>When we login, the secure.js resource is also fetched from web server.
+<!-- raw HTML omitted -->
+Try the leaked credentials and we will successfully login and redirected to /admin.php where the flag is displayed
+admin:strongPassword098765</p>
+<h1 id="inspect-html">Inspect HTML</h1>
+<p>Can you get the flag?</p>
+<p>Inspect HTML or view the source to get the flag.</p>
+<h1 id="includes">Includes</h1>
+<p>Inspect the index page source and see that style.css is in the HTML head tag (Network tab will not show it). There is another web resource script.js. Both style.css and script.js contains parts of the flag.</p>
+<p><a href="http://saturn.picoctf.net:62734/style.css">http://saturn.picoctf.net:62734/style.css</a>
+<a href="http://saturn.picoctf.net:62734/script.js">http://saturn.picoctf.net:62734/script.js</a></p>
+<h1 id="scavenger-hunt">Scavenger Hunt</h1>
+<p>#apache #htaccess #ds_store #mac</p>
+<p>There is some interesting information hidden around this site <a href="http://mercury.picoctf.net:44070/">http://mercury.picoctf.net:44070/</a>. Can you find it?</p>
+<p>The index page HTML source contains first page of the flag - picoCTF{t</p>
+<p>view-source:http://mercury.picoctf.net:44070/ shows the mycss.css
+view-source:http://mercury.picoctf.net:44070/mycss.css has a comment for second part of the flag.</p>
+<p>h4ts_4_l0</p>
+<p>view-source:http://mercury.picoctf.net:44070/myjs.js has a comment - <code>/* How can I keep Google from indexing my website? */</code></p>
+<p>We should check robots.txt
+<a href="http://mercury.picoctf.net:44070/robots.txt">http://mercury.picoctf.net:44070/robots.txt</a>
+<!-- raw HTML omitted -->
+Third part of the flag: t_0f_pl4c</p>
+<p>The response suggests apache server and <code>Access</code> with capital &lsquo;A&rsquo;. A quick google search apache server access file will suggest a resource called .htaccess</p>
+<p><a href="https://httpd.apache.org/docs/current/howto/htaccess.html">https://httpd.apache.org/docs/current/howto/htaccess.html</a></p>
+<p><a href="http://mercury.picoctf.net:44070/.htaccess">http://mercury.picoctf.net:44070/.htaccess</a>
+<!-- raw HTML omitted -->
+3s_2_lO0k</p>
+<p>The response suggests Mac and Store keywords.
+Google What are store files in mac os</p>
+<p><a href="https://en.wikipedia.org/wiki/.DS_Store">https://en.wikipedia.org/wiki/.DS_Store</a></p>
+<p><a href="http://mercury.picoctf.net:44070/.DS_Store">http://mercury.picoctf.net:44070/.DS_Store</a></p>
+<ul>
+<li>Part 5: _7a46d25d}</li>
+</ul>
+<p>picoCTF{th4ts_4_l0t_0f_pl4c3s_2_lO0k_7a46d25d}</p>
+<h1 id="dont-use-client-side">Dont-use-client-side</h1>
+<p>Can you break into this super secure portal? <a href="https://jupiter.challenges.picoctf.org/problem/37821/">https://jupiter.challenges.picoctf.org/problem/37821/</a> (link) or <a href="http://jupiter.challenges.picoctf.org:37821">http://jupiter.challenges.picoctf.org:37821</a></p>
+<p>Inspect the index page and we will see the flag in the HTML
+<!-- raw HTML omitted --></p>
+<p>Rearrange the parts of flag, we just see the <code>(split, split*2), (split*3, split*4), ...</code> and so on for the order of the flag fragments.</p>
+<p>picoCTF{no_clients_plz_1a3c89}</p>
+<h1 id="logon">logon</h1>
+<p>The factory is hiding things from all of its users. Can you login as Joe and find what they&rsquo;ve been looking at? <a href="https://jupiter.challenges.picoctf.org/problem/15796/">https://jupiter.challenges.picoctf.org/problem/15796/</a> (link) or <a href="http://jupiter.challenges.picoctf.org:15796">http://jupiter.challenges.picoctf.org:15796</a></p>
+<p>Login with joe:&rsquo; will redirect you to the /flag
+Login with Joe:&rsquo; will give you invalid login</p>
+<p>When we perform a login with a random user, we can see the flow which leads us to GET /flag</p>
+<p><a href="https://jupiter.challenges.picoctf.org/problem/15796/flag">https://jupiter.challenges.picoctf.org/problem/15796/flag</a>
+But we will not be able to see the flag.</p>
+<!-- raw HTML omitted -->
+<p>At one point of the authentication flow, we see theres a reflection in the response Set-Cookie header. We may want to try attacks like CRLF injection but lets just go with the simplest vector of adding POST body parameter <code>admin=true</code></p>
+<!-- raw HTML omitted -->
+<p>We should intercept the login request from the start and add the admin=true into the POST request. However, this will not work. Instead, continue to forward the intercept request. We will see the Cookies with admin=False made for GET /flag. Change it to admin=True and continue to forward the request.</p>
+<!-- raw HTML omitted -->
+<p>You will get the flag at the end of the flow. If you want to do it in repeater, just add admin=True in the request Cookie header as it is not automatically set.</p>
+<h1 id="insp3ct0r">Insp3ct0r</h1>
+<p>Kishor Balan tipped us off that the following code may need inspection: <a href="https://jupiter.challenges.picoctf.org/problem/44924/">https://jupiter.challenges.picoctf.org/problem/44924/</a> (link) or <a href="http://jupiter.challenges.picoctf.org:44924">http://jupiter.challenges.picoctf.org:44924</a></p>
+<p>Inspect source and we get first part of flag:
+picoCTF{tru3_d3</p>
+<p>Second part of flag found in: view-source:https://jupiter.challenges.picoctf.org/problem/44924/mycss.css
+t3ct1ve_0r_ju5t</p>
+<p>Third part of flag found in: view-source:https://jupiter.challenges.picoctf.org/problem/44924/myjs.js
+_lucky?f10be399}</p>
+<p>picoCTF{tru3_d3t3ct1ve_0r_ju5t_lucky?f10be399}</p>
+<h1 id="where-are-the-robots">Where are the robots</h1>
+<p>Can you find the robots? <a href="https://jupiter.challenges.picoctf.org/problem/60915/">https://jupiter.challenges.picoctf.org/problem/60915/</a> (link) or <a href="http://jupiter.challenges.picoctf.org:60915">http://jupiter.challenges.picoctf.org:60915</a></p>
+<p><a href="https://jupiter.challenges.picoctf.org/problem/60915/robots.txt">https://jupiter.challenges.picoctf.org/problem/60915/robots.txt</a> will review an endpoint /8028f.html</p>
+<p><a href="https://jupiter.challenges.picoctf.org/problem/60915//8028f.html">https://jupiter.challenges.picoctf.org/problem/60915//8028f.html</a> will show the flag</p>
+
+</article>
+
+                
+    
+    
+        Nicholas Ch • © 2025
+    
+
+
+            </div>
+        </main>
+    </body>
+</html>
