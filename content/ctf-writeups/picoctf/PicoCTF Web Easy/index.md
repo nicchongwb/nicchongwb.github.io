@@ -1,5 +1,5 @@
 +++
-date = '2024-12-01T17:07:19+08:00'
+date = '2025-08-08T17:07:19+08:00'
 draft = false
 title = 'PicoCTF Web Easy Writeup'
 +++
@@ -232,12 +232,15 @@ You will get the flag at the end of the flow. If you want to do it in repeater, 
 Kishor Balan tipped us off that the following code may need inspection: https://jupiter.challenges.picoctf.org/problem/44924/ (link) or http://jupiter.challenges.picoctf.org:44924
 
 Inspect source and we get first part of flag:
+
 picoCTF{tru3_d3
 
 Second part of flag found in: view-source:https://jupiter.challenges.picoctf.org/problem/44924/mycss.css
+
 t3ct1ve_0r_ju5t
 
 Third part of flag found in: view-source:https://jupiter.challenges.picoctf.org/problem/44924/myjs.js
+
 \_lucky?f10be399}
 
 picoCTF{tru3_d3t3ct1ve_0r_ju5t_lucky?f10be399}

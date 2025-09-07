@@ -6,14 +6,21 @@
     <description>Recent content on Nicholas Ch&#39;s blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Dec 2024 17:07:19 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 09 Aug 2025 17:07:19 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/ctf-writeups/picoctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>PicoCTF Web Easy Writeup</title>
       <link>http://localhost:1313/ctf-writeups/picoctf/picoctf-web-easy/</link>
-      <pubDate>Sun, 01 Dec 2024 17:07:19 +0800</pubDate>
+      <pubDate>Sat, 09 Aug 2025 17:07:19 +0800</pubDate>
       <guid>http://localhost:1313/ctf-writeups/picoctf/picoctf-web-easy/</guid>
       <description>&lt;h1 id=&#34;sst1&#34;&gt;SST1&lt;/h1&gt;&#xA;&lt;p&gt;I made a cool website where you can announce whatever you want! Try it out.&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;a.png&#34; alt=&#34;a&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;Response header suggests it is a Python web server. It can be either a Twig (PHP) or Jinja2 (Python) templating engine.&lt;/p&gt;&#xA;&lt;p&gt;Let&amp;rsquo;s go with Jinja first. We can perform SSTI by abusing the MRO function to display classes. The MRO will list the order in which the hierarchy of classes will be handled, we can take advantage of the fact that it lists the classes, to select the one we want. This will help us select the necessary gadgets and chain them to achieve our objective.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>PicoCTF Web Medium Writeup</title>
+      <link>http://localhost:1313/ctf-writeups/picoctf/picoctf-web-medium/</link>
+      <pubDate>Sat, 09 Aug 2025 17:07:19 +0800</pubDate>
+      <guid>http://localhost:1313/ctf-writeups/picoctf/picoctf-web-medium/</guid>
+      <description>&lt;h1 id=&#34;ssti2&#34;&gt;SSTI2&lt;/h1&gt;&#xA;&lt;p&gt;I made a cool website where you can announce whatever you want! I read about input sanitization, so now I remove any kind of characters that could be a problem :) I heard templating is a cool and modular way to build web apps! Check out my website&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://shape-facility.picoctf.net:63568/&#34;&gt;http://shape-facility.picoctf.net:63568/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Website is vulnerable to SSTI&#xA;&lt;img src=&#34;4f353aa04b3d12bbc315a7900e2f82ec1cb08d1e.png&#34; alt=&#34;a&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;Based on the server response header and templating evaluation, most probably a Python templating engine, Jinja2&#xA;&lt;img src=&#34;790e45b4b52ecadead56b655e917f5c68529db65.png&#34; alt=&#34;b&#34;&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

